@@ -10,6 +10,26 @@
 
 using namespace std;
 
+size_t firstLetter = int('0');
+
+int p(char c) {
+    /*
+    A function to return the postion of a letter.
+    Starts from 0 to ALPHABET_LENGTH.
+    e.g.
+    A = 10
+    B = 11
+     */
+    return int(c) - firstLetter;
+}
+
+char * trim(char * str, size_t start) {
+    char * substr;
+    size_t size = strlen(substr);
+    sprintf(substr, "%.*s", size, str + start);
+    return substr;
+}
+
 class Tree;
 
 class Node {
@@ -22,28 +42,28 @@ private:
     size_t size;
 
 public:
-    Node(char const * str = "") {
+    Node(char const * str, bool isWord = false) {
         this->str = new char(*str);
         this->sons = new Node * [ALPHABET_LENGTH];
-        this->isWord = true;
+        this->isWord = isWord;
         this->parent = 0;
         this->size = strlen(str);
     }
 
-    size_t contains(char * otherStr) {
-        size_t minSize = strlen(str);
-        size_t result = INSIDE;
-
+    size_t contains(char * otherStr, size_t & i) {
+        size_t minSize = strlen(otherStr);
+        size_t result = PARTIAL;
         if (size < minSize) {
-            result = INSIDE;
             minSize = size;
+        } else {
+            result = INSIDE;
         }
 
         if ( ! minSize || otherStr[0] != str[0]) {
             return NOT_FOUND;
         }
 
-        for (size_t i = 1; i < minSize; i += 1) {
+        for (i = 1; i < minSize; i += 1) {
             if (otherStr[i] != str[i]) {
                 result = PARTIAL;
                 break;
