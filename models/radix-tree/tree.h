@@ -24,6 +24,7 @@ public:
     }
 
     void printSons() {
+        // printSons(root->sons[p('H')]);
         printSons(root);
     }
 
@@ -80,9 +81,9 @@ public:
     }
 
     void add (string str) {
-        if (str == "HELLO") {
-            shouldPrint = true;
-        }
+        // if (str == "HELLO") {
+        //     shouldPrint = true;
+        // }
         if ( ! root) {
             root = new Node(str, true);
             return;
@@ -210,14 +211,19 @@ private:
 
     void splitNode(Node * & node, string & str, size_t position) {
         if (shouldPrint) cout << "splitting: " << (node == root) << endl;
+        if (shouldPrint) cout << "node: " << node->parent->str << endl;
+        char nodeIndex = node->str[0];
         string res = node->reverseCut(position);
-        if (shouldPrint) cout << "node: " << node->str << endl;
         Node * newParent = new Node(res, false);
         Node * parent = node->parent;
         if (node == root) {
             root = newParent;
         } else {
-            parent->sons[p(node->str[0])] = 0;
+            // if (shouldPrint) {
+            //     cout << "^ node" << node->parent->str << endl;;
+            //     return;
+            // }
+            parent->sons[p(nodeIndex)] = 0;
             parent->sons[p(newParent->str[0])] = newParent;
         }
         newParent->parent = node->parent;
