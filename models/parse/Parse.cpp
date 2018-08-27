@@ -1,5 +1,6 @@
 #include "Parse.h"
-#include <locale.h>
+
+string empty = "";
 
 using namespace std;
 Parse::Parse(string pathFile)
@@ -12,7 +13,7 @@ Parse::Parse(string pathFile)
 
 vector<string> Parse::processFile()
 {
-	try 
+	try
 	{
 		if (inputFile)
 		{
@@ -24,9 +25,9 @@ vector<string> Parse::processFile()
 				if (outputFile.is_open())
 				{
 					words.push_back(removeCharacter(word));
-					//outputFile << removeCharacter(word) + " ";
+					//outputFile << removeCharacter(word) + empty;
 				}
-			
+
 			}
 			//outputFile.close();
 			//cout << "File output writted" << endl;
@@ -55,7 +56,7 @@ string Parse::removeCharacter(string word)
 	{
 		unsigned char charAt = word[i];
 		int c = (int)charAt;
-		
+
 		if ((c <= 57 && c >= 48) || (c <= 122 && c >= 97) || (c <= 90 && c >= 65))
 		{
 			newWord += toupper(c);
@@ -63,15 +64,15 @@ string Parse::removeCharacter(string word)
 		else if( c == 13)
 		{
 			newWord += toupper(c);
-		} 
+		}
 		else if ((c <= 47 && c >= 33) || (c <= 63 && c >= 58) || (c <= 96 && c >= 91) || (c <= 126 && c >= 123) || (c <= 159 && c >= 156) | (c <= 180 && c >= 166) || (c <= 188 && c >= 184) || (c <= 197 && c >= 191)
 			|| (c <= 208 && c >= 202) || (c <= 223 && c >= 213) || (c <= 255 && c >= 244) || (c <= 242 && c >= 238) || (c == 200) || c == 183 || c == 161 ||c == 160)
 		{
-			newWord += " ";
+			newWord += empty;
 		}
 		else
 		{
-			
+
 			if (c == 225 || c == 226 || c == 227 || c == 228 || c == 230 || c == 224 || c==229) {
 				newWord += "A";
 			}
@@ -98,34 +99,34 @@ string Parse::removeCharacter(string word)
 			}
 			else if (c == 189 || c == 164)
 			{
-				newWord += " ";//"½il"  //"¤,"
+				newWord += empty;//"½il"  //"¤,"
 			}
 			else if (c == 163 || c == 198 || c == 230 || c == 64)
 			{
-				newWord += " "; //ætla  230 198			//@ 64 //163 £
+				newWord += empty; //ætla  230 198			//@ 64 //163 £
 			}
 			else if (c == 165)
 			{
-				newWord += " ";//¥ 165
+				newWord += empty;//¥ 165
 			}
 			else if ( c == 182)
 			{
-				newWord += " ";//* 182 
+				newWord += empty;//* 182
 			}
 			else if (c == 162)
 			{
-				newWord += " ";//% 162
+				newWord += empty;//% 162
 			}
 			else if (c == 190)
 			{
-				newWord += " ";// ¾ 
+				newWord += empty;// ¾
 			}
 			else
 			{
 				cout << word << "-" << i << "ascii: " << c << endl;
 			}
 
-			
+
 		}
 	}
 	return newWord;

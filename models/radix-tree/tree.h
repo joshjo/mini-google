@@ -1,6 +1,6 @@
 #ifndef TREE_H
 #define TREE_H
-#include "Node.h"
+#include "node.h"
 
 class Tree {
 private:
@@ -28,6 +28,19 @@ public:
         printSons(root);
     }
 
+    bool find(string str) {
+        size_t position = 0;
+        Node * node = root;
+        size_t result;
+
+        if (node) {
+            result = node->contains(str, position);
+            cout << "result: " << result << endl;
+            cout << "position: " << position << endl;
+            if (position == )
+        }
+    }
+
     size_t find(
             string & str,
             Node * & node,
@@ -35,7 +48,6 @@ public:
             size_t & position
         ) {
         position = 0;
-        // node = &(root->sons[p(str[position])]);
         parent = 0;
         node = root;
         size_t result;

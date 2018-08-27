@@ -1,6 +1,6 @@
 #include "Parse.h"
 //#include <vector>
-void main()
+int main()
 {
 	vector<string> g1;
 	g1.push_back("spanishText_10000_15000");
@@ -70,6 +70,6 @@ void main()
 		result = parse->processFile();
 		cout << endl;
 	}
-		
+
 	getchar();
 }
