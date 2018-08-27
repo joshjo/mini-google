@@ -5,8 +5,10 @@
 // We are not considering the ñ letter
 #define ALPHABET_LENGTH 36
 #define NOT_FOUND 0
-#define PARTIAL 1
-#define INSIDE 2
+#define SPLIT_1 1
+#define SPLIT_2 2
+#define INSIDE 3
+#define FOUND 4
 
 using namespace std;
 
@@ -20,12 +22,29 @@ int p(char c) {
     A = 10
     B = 11
      */
-    return int(c) - firstLetter;
+    if (c >= '0' && c <= '9') {
+        return int(c) - firstLetter;
+    }
+    else {
+        return int(c) - firstLetter - 7;
+    }
 }
 
-char * trim(char * str, size_t start) {
+char c(int p) {
+    if (p >= 0 && p <= 9) {
+        return char(p + firstLetter);
+    }
+    else {
+        return char(p + firstLetter + 7);
+    }
+}
+
+char * trim(char * & str, size_t start) {
+    // Remove this line will produce a segmentation fault
+    // char * ctr = str;
+    //
     char * substr;
-    size_t size = strlen(substr);
+    size_t size = strlen(str);
     sprintf(substr, "%.*s", size, str + start);
     return substr;
 }
@@ -35,41 +54,62 @@ class Tree;
 class Node {
 
 private:
-    char * str;
     Node ** sons;
     Node * parent;
     bool isWord;
-    size_t size;
+    string str;
 
 public:
-    Node(char const * str, bool isWord = false) {
-        this->str = new char(*str);
+    Node() {
+        this->str = "";
+        this->sons = new Node * [ALPHABET_LENGTH];
+        this->isWord = false;
+        this->parent = 0;
+        for (int i = 0; i < ALPHABET_LENGTH; i += 1) {
+            this->sons[i] = 0;
+        }
+    }
+    Node(string & str, bool isWord = false) {
+        this->str = str;
         this->sons = new Node * [ALPHABET_LENGTH];
         this->isWord = isWord;
         this->parent = 0;
-        this->size = strlen(str);
+        for (int i = 0; i < ALPHABET_LENGTH; i += 1) {
+            this->sons[i] = 0;
+        }
+        // this->size = strlen(str);
     }
 
-    size_t contains(char * otherStr, size_t & i) {
-        size_t minSize = strlen(otherStr);
-        size_t result = PARTIAL;
-        if (size < minSize) {
-            minSize = size;
-        } else {
-            result = INSIDE;
-        }
+    string cut(size_t pos) {
+        string rest = str.substr(pos, str.size());
+        str = str.substr(0, pos);
+        return rest;
+    }
 
-        if ( ! minSize || otherStr[0] != str[0]) {
-            return NOT_FOUND;
-        }
+    string reverseCut(size_t pos) {
+        string rest = str.substr(0, pos);
+        str = str.substr(pos, str.size());
+        return rest;
+    }
 
-        for (i = 1; i < minSize; i += 1) {
-            if (otherStr[i] != str[i]) {
-                result = PARTIAL;
-                break;
+    size_t contains(string & otherStr, size_t & i) {
+        size_t size = str.size();
+        size_t otherSize = otherStr.size();
+        for (i = 0; i < size; i += 1) {
+            if (str[i] != otherStr[i]) {
+                if (i >= otherSize) {
+                    return INSIDE;
+                } else if (i > 0) {
+                    return SPLIT_2;
+                } else {
+                    return NOT_FOUND;
+                }
             }
         }
-        return result;
+        if (size == otherSize) {
+            return FOUND;
+        }
+        return SPLIT_1;
     }
 
     friend class Tree;
