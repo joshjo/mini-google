@@ -10,5 +10,6 @@ int main()
 		cout << "IdFile: " << list.at(i).idFile << " Content: " << list.at(i).content ;
 		cout << " Pos: " << list.at(i).start << " - "  << list.at(i).end << endl;
 	}
+
 	return 0;
 }

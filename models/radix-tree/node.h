@@ -39,15 +39,6 @@ char c(int p) {
     }
 }
 
-char * trim(char * & str, size_t start) {
-    // Remove this line will produce a segmentation fault
-    // char * ctr = str;
-    //
-    char * substr;
-    size_t size = strlen(str);
-    sprintf(substr, "%.*s", size, str + start);
-    return substr;
-}
 
 class Tree;
 
