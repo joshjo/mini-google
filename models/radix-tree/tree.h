@@ -31,14 +31,24 @@ public:
     bool find(string str) {
         size_t position = 0;
         Node * node = root;
+        Node * next;
         size_t result;
+        string prevStr = str;
 
-        if (node) {
+        while (node) {
             result = node->contains(str, position);
-            cout << "result: " << result << endl;
-            cout << "position: " << position << endl;
-            if (position == )
+            prevStr = str;
+            str = str.substr(position);
+            next = node->sons[p(str[0])];
+            if (str.size() && next) {
+                node = next;
+            } else {
+                break;
+            }
         }
+        // cout << "str size " << prevStr << endl;
+        // cout << "node isw " << node->str << endl;
+        return ((prevStr == node->str) && node->isWord);
     }
 
     size_t find(
