@@ -6,7 +6,6 @@
 #include <map>
 #include <vector>
 
-#include <direct.h>
 using namespace std;
 //Struct Document
 
@@ -40,7 +39,7 @@ private:
 		{
 			unsigned char charAt = word[i];
 			int c = (int)charAt;
-			
+
 			if ((c <= 57 && c >= 48) || (c <= 122 && c >= 97) || (c <= 90 && c >= 65))
 			{
 				newWord += toupper(c);
@@ -48,7 +47,7 @@ private:
 			else if( c == 13)
 			{
 				newWord += toupper(c);
-			} 
+			}
 			else if (c == 225 || c == 226 || c == 227 || c == 228 || c == 230 || c == 224 || c==229) {
 					newWord += "A";
 				}
@@ -101,7 +100,7 @@ private:
 				}
 				else if (c == 182)
 				{
-					newWord += " ";//* 182 
+					newWord += " ";//* 182
 				}
 				else if (c == 162)
 				{
@@ -109,7 +108,7 @@ private:
 				}
 				else if (c == 190)
 				{
-					newWord += " ";// � 
+					newWord += " ";// �
 				}*/
 			}
 
@@ -125,7 +124,7 @@ private:
 		line.erase(0, ini);
 		unsigned int end = line.find("\"");
 		string result = line.substr(0, end);
-		
+
 		return stoi(result);
 	};
 
@@ -153,7 +152,7 @@ private:
 					tempDoc->start = (int)inputFile.tellg() - line.length() - 2;
 
 					tempDoc->idFile = idFile;
-					
+
 				}
 				else if (line.find(endLine) != string::npos)
 				{
@@ -184,18 +183,18 @@ private:
 							objWord.content = temp;
 							words.push_back(objWord);
 						}
-						
-						
+
+
 					}
-					
-					
+
+
 				}
 			}
 			string word;
 			while (inputFile >> word)
 			{
 				removeCharacter(word);
-				
+
 			}
 		}
 		else
@@ -207,7 +206,7 @@ private:
 	vector<string> obtenerDirectorio()
 	{
 		vector<string> g1;
-		g1.push_back("spanishText_10000_15000");
+		g1.push_back("test");
 		/*g1.push_back("spanishText_15000_20000");
 		g1.push_back("spanishText_20000_25000");
 		g1.push_back("spanishText_25000_30000");
@@ -282,7 +281,7 @@ public:
 			files.insert(make_pair(countFiles, listado.at(i)));
 			readFile(countFiles, listado.at(i));
 		}
-		
+
 		return words;
 	};
 	~Parse();
