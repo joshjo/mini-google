@@ -74,22 +74,39 @@ int main(int argc, char *argv[]) {
     //     t.add(abc);
     //     abc = abc.substr(0, abc.size() - 1);
     // }
+    //
+    vector <string> words;
+    // words.push_back("ANA");
+    // words.push_back("BERTHA");
+    // words.push_back("AH");
+    // words.push_back("AIRPLANE");
+    // words.push_back("AIR");
+    // words.push_back("AM");
+    // words.push_back("ILL");
+    // words.push_back("IRON");
+    // words.push_back("I");
+    // words.push_back("ILLNESS");
+    // words.push_back("INCLUDE");
+    // words.push_back("INSIDE");
+    words.push_back("HILL");
+    words.push_back("HI");
+    words.push_back("HELLO");
 
-    t.add("ANA");
-    t.add("BERTHA");
-    t.add("AH");
-    t.add("AIRPLANE");
-    t.add("AIR");
-    t.add("AM");
-    t.add("ILL");
-    t.add("IRON");
-    t.add("I");
-    t.add("ILLNESS");
-    t.add("INCLUDE");
-    t.add("INSIDE");
-    t.add("HILL");
-    t.add("HI");
-    t.add("HELLO");
+    // t.add("ANA");
+    // t.add("BERTHA");
+    // t.add("AH");
+    // t.add("AIRPLANE");
+    // t.add("AIR");
+    // t.add("AM");
+    // t.add("ILL");
+    // t.add("IRON");
+    // t.add("I");
+    // t.add("ILLNESS");
+    // t.add("INCLUDE");
+    // t.add("INSIDE");
+    // t.add("HILL");
+    // t.add("HI");
+    // t.add("HELLO");
 
     // t.add("HARD");
     // t.add("HARM");
@@ -104,10 +121,10 @@ int main(int argc, char *argv[]) {
     // // sprintf(substr, "%.*s", 3, str + 0);
     // // cout << str.substr(1) << endl;
     // // cout << strlen(substr) << endl;
-    t.print();
-    t.find("HI");
+    // t.print();
+    // cout << t.find("HI") << endl;
     // cout << t.graphviz() << endl;
-    // vector<string> result;
+    vector<string> result;
     // for (auto ir = g1.crbegin(); ir != g1.crend(); ++ir)
     // {
     //     cout << *ir << endl;
@@ -116,10 +133,12 @@ int main(int argc, char *argv[]) {
     //     cout << endl;
     // }
 
-    // for (auto it = result.begin(); it != result.end(); ++it) {
-    //     t.add(*it);
-    //     // cout << *it << endl;
-    // }
+    for (auto it = result.begin(); it != result.end(); ++it) {
+        t.add(*it);
+    }
     // cout << t.graphviz() << endl;
+    //
+    // string str = "HELLO";
+    // cout << str.substr(2);
     return 0;
 }
