@@ -7,13 +7,22 @@ using namespace std;
 
 
 int main(int argc, char *argv[]) {
+    // map <string, int> words;
+
+    // words["HOLA"] = 1;
+    // auto it = words.find("HOLA");
+    // if (it != words.end()) {
+    //     cout << it->second << endl;
+    // } else {
+    //     cout << "NOT" << endl;
+    // }
     Parse *parse = new Parse("../../files/");
     parse->processFile();
-    Tree t;
+    // Tree t;
 
-    for(multimap<string, Word *>::iterator it = parse->words.begin(), end = parse->words.end(); it != end; it = parse->words.upper_bound(it->first)) {
-        t.add(it->first);
-    }
+    // for(multimap<string, Word *>::iterator it = parse->words.begin(), end = parse->words.end(); it != end; it = parse->words.upper_bound(it->first)) {
+    //     t.add(it->first);
+    // }
 
 
     // for(int i = 0; i < list.size(); i++)
@@ -46,15 +55,15 @@ int main(int argc, char *argv[]) {
         if (word == "exit") {
             break;
         }
-        string result;
-        bool found = t.find(word, result);
-        if (found) {
-            cout << ":) Found " << result << endl;
-            parse->someContent(result);
-        } else {
-            cout << ":( NOT Found";
-        }
-        cout << endl;
+    //     string result;
+    //     bool found = t.find(word, result);
+    //     if (found) {
+    //         cout << ":) Found " << result << endl;
+    //         parse->someContent(result);
+    //     } else {
+    //         cout << ":( NOT Found";
+    //     }
+    //     cout << endl;
     }
     return 0;
 }

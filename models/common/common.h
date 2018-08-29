@@ -12,16 +12,31 @@ using namespace std;
 
 struct Document {
     int idDocument;
-    int idFile;
+    unsigned short int idFile;
     int start;
     int end;
 };
 
+struct WordDoc {
+    unsigned short int pagerank;
+    unsigned short int idFile;
+
+    WordDoc(unsigned short int idFile) {
+        this->idFile = idFile;
+        pagerank = 1;
+    }
+
+    int inc(int n = 1) {
+        pagerank += n;
+        return pagerank;
+    }
+};
+
 struct Word {
-    int idFile;
+    unsigned short int idFile;
     int start;
-    int end;
-    string content;
+    // int end;
+    // string content;
 };
 
 #endif // COMMON_H
