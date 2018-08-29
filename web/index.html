@@ -2,58 +2,9 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>mini google</title>
+    <link rel="stylesheet" href="css/styles.css">
   </head>
-  <script>
-
-  //crear lista de lista de Datos
-    data =[
-      "poco",
-      "pocor",
-      "pocoo",
-      "pocoyo",
-      "poco AED",
-      "pocco",
-      "jorge Pocco",
-      "Jorge Pocco AED",
-    ];
-
-    //lista de obciones permitidas
-    var n =  data.length;
-    console.log("--> "+data[7]);
-
-    function sugerir(value){
-      /* La lista vacia al inicio de la funcion
-      *  si nos saltamos la misma lista se va repetir
-      */
-      document.getElementById('listaDatos').innerHTML='';
-      // l = value.length; // tamanio de el query
-
-      /* recorremos todo los datos comparando
-      *  si el valor eciste en nuestra lista,
-      *  para ello casteamos a minusculas
-      */
-
-      for(var  i = 0; i < n; i++){
-        // if( ((data[i].toLowerCase()).indexOf(value.toString().toLowerCase())) > (-1)){
-
-            var nodo  = document.createElement("option");
-            var value = document.createTextNode(data[i]);
-            console.log("data: "+value);
-            nodo.appendChild(value);
-            document.getElementById("listaDatos").appendChild(nodo);
-  			// }
-      }
-    }
-
-    //consulta get data string buscado
-    function querySearch(){
-      var value = document.getElementById("inputsearch").value;
-      console.log("data "+value);
-      location.href='main.html';
-    }
-
-  </script>
   <style>
     .center {
     display: block;
@@ -84,6 +35,75 @@
     font-size: 16px;
     }
     .button:hover {background-color: #e7e7e7;}
+    /* ------------------------------------------------------------------------- */
+  * {
+  box-sizing: border-box;
+}
+
+body {
+  font: 16px Arial;
+}
+
+.autocomplete {
+  /*the container must be positioned relative:*/
+  position: relative;
+  /* display: inline-block; */
+}
+
+input {
+  border: 1px solid transparent;
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 16px;
+}
+
+input[type=text] {
+  background-color: #f1f1f1;
+  width: 100%;
+}
+
+.box-input{
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    width: 30%;
+}
+
+input[type=submit] {
+  background-color: #f8f8f8;//DodgerBlue;
+  color: #222;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: 1px solid #d4d4d4; //cambio
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  /* border-bottom: 1px solid #d4d4d4; */
+}
+
+.autocomplete-items div:hover {
+  /*when hovering an item:*/
+  background-color: #e9e9e9;
+}
+
+.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: DodgerBlue !important;
+  color: #ffffff;
+}
   </style>
   <body>
     <div class="minigoogle">
@@ -92,13 +112,14 @@
     <div class="minigoogle">
        <img src="img/altavista.png" class="center"alt="Smiley face" width="272" height="92">
        <br>
-       <input id="inputsearch" list="listaDatos" onkeyup="sugerir(this.value)" type="text" name="" placeholder="buscar" class="center index_input">
-       <datalist id="listaDatos" >
-         <option value="ab"></option> -->
-       </datalist>
-       <!--  botton  -->
+       <!-- autocompletado en div y un text field -->
+       <div id="autocompleteDiv" class="autocomplete center " style="width:300px;">
+         <input id="myInput" type="text" name="myCountry" placeholder="Buscar en Mini altavista" >
+       </div>
+       <br>
        <br>
        <button type="button" onclick="querySearch()" aria-label="Google Search" class="center button" name="btnK" type="submit"> Search</button>
     </div>
+  <script type="text/javascript" src="js/controllerIndex.js"></script>
   </body>
 </html>
