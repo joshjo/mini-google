@@ -7,11 +7,14 @@ using namespace std;
 
 
 int main(int argc, char *argv[]) {
-    Parse *parse = new Parse("../../test/");
-    vector<Word> list = parse->processFile();
+    Parse *parse = new Parse("../../files/");
+    parse->processFile();
+    Tree t;
 
-    std::ifstream file("../../test/test");
-    if(file.is_open())
+    for(multimap<string, Word *>::iterator it = parse->words.begin(), end = parse->words.end(); it != end; it = parse->words.upper_bound(it->first)) {
+        t.add(it->first);
+    }
+
 
     // for(int i = 0; i < list.size(); i++)
     // {
@@ -30,36 +33,28 @@ int main(int argc, char *argv[]) {
     // // g1.push_back("../../files/spanishText_10000_15000");
     // g1.push_back("../../files/test");
 
-    // Tree t;
 
-    // vector <string> words;
 
-    // vector<string> result;
-    // for (auto ir = g1.crbegin(); ir != g1.crend(); ++ir)
-    // {
-    //     cout << *ir << endl;
-    //     Parse *parse = new Parse(*ir);
-    //     result = parse->processFile();
-    //     cout << endl;
-    // }
-
-    // for (auto it = result.begin(); it != result.end(); ++it) {
+    // for (auto it = words.begin(); it != words.end(); ++it) {
     //     t.add(*it);
     // }
 
-    // while (true) {
-    //     string word;
-    //     cout << "Please enter a word ..." << endl;
-    //     cin >> word;
-    //     if (word == "exit") {
-    //         break;
-    //     }
-    //     if (t.find(word)) {
-    //         cout << ":) Found " << word;
-    //     } else {
-    //         cout << ":( NOT Found";
-    //     }
-    //     cout << endl;
-    // }
+    while (true) {
+        string word;
+        cout << "Please enter a word ..." << endl;
+        cin >> word;
+        if (word == "exit") {
+            break;
+        }
+        string result;
+        bool found = t.find(word, result);
+        if (found) {
+            cout << ":) Found " << result << endl;
+            parse->someContent(result);
+        } else {
+            cout << ":( NOT Found";
+        }
+        cout << endl;
+    }
     return 0;
 }

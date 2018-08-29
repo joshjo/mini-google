@@ -50,6 +50,7 @@ private:
     Node * parent;
     bool isWord;
     string str;
+    string word;
 
 public:
     Node() {
@@ -60,6 +61,7 @@ public:
         for (int i = 0; i < ALPHABET_LENGTH; i += 1) {
             this->sons[i] = 0;
         }
+        // this->word = 0;
     }
     Node(string & str, bool isWord = false) {
         this->str = str;
@@ -69,7 +71,17 @@ public:
         for (int i = 0; i < ALPHABET_LENGTH; i += 1) {
             this->sons[i] = 0;
         }
-        // this->size = strlen(str);
+        // this->word = '0';
+    }
+    Node(string & word, string & str, bool isWord = false) {
+        this->str = str;
+        this->word = word;
+        this->sons = new Node * [ALPHABET_LENGTH];
+        this->isWord = isWord;
+        this->parent = 0;
+        for (int i = 0; i < ALPHABET_LENGTH; i += 1) {
+            this->sons[i] = 0;
+        }
     }
 
     string cut(size_t pos) {
