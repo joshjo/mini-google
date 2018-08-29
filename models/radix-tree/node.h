@@ -2,54 +2,118 @@
 #define NODE_H
 #include <iostream>
 #include <string.h>
+#include "../common/common.h"
 // We are not considering the ñ letter
 #define ALPHABET_LENGTH 36
 #define NOT_FOUND 0
-#define PARTIAL 1
-#define INSIDE 2
+#define SPLIT_1 1
+#define SPLIT_2 2
+#define INSIDE 3
+#define FOUND 4
 
 using namespace std;
+
+size_t firstLetter = int('0');
+
+int p(char c) {
+    /*
+    A function to return the postion of a letter.
+    Starts from 0 to ALPHABET_LENGTH.
+    e.g.
+    A = 10
+    B = 11
+     */
+    if (c >= '0' && c <= '9') {
+        return int(c) - firstLetter;
+    }
+    else {
+        return int(c) - firstLetter - 7;
+    }
+}
+
+char c(int p) {
+    if (p >= 0 && p <= 9) {
+        return char(p + firstLetter);
+    }
+    else {
+        return char(p + firstLetter + 7);
+    }
+}
+
 
 class Tree;
 
 class Node {
 
 private:
-    char * str;
     Node ** sons;
     Node * parent;
     bool isWord;
-    size_t size;
+    string str;
+    string word;
 
 public:
-    Node(char const * str = "") {
-        this->str = new char(*str);
+    Node() {
+        this->str = "";
         this->sons = new Node * [ALPHABET_LENGTH];
-        this->isWord = true;
+        this->isWord = false;
         this->parent = 0;
-        this->size = strlen(str);
+        for (int i = 0; i < ALPHABET_LENGTH; i += 1) {
+            this->sons[i] = 0;
+        }
+        // this->word = 0;
+    }
+    Node(string & str, bool isWord = false) {
+        this->str = str;
+        this->sons = new Node * [ALPHABET_LENGTH];
+        this->isWord = isWord;
+        this->parent = 0;
+        for (int i = 0; i < ALPHABET_LENGTH; i += 1) {
+            this->sons[i] = 0;
+        }
+        // this->word = '0';
+    }
+    Node(string & word, string & str, bool isWord = false) {
+        this->str = str;
+        this->word = word;
+        this->sons = new Node * [ALPHABET_LENGTH];
+        this->isWord = isWord;
+        this->parent = 0;
+        for (int i = 0; i < ALPHABET_LENGTH; i += 1) {
+            this->sons[i] = 0;
+        }
     }
 
-    size_t contains(char * otherStr) {
-        size_t minSize = strlen(str);
-        size_t result = INSIDE;
+    string cut(size_t pos) {
+        string rest = str.substr(pos, str.size());
+        str = str.substr(0, pos);
+        return rest;
+    }
 
-        if (size < minSize) {
-            result = INSIDE;
-            minSize = size;
-        }
+    string reverseCut(size_t pos) {
+        string rest = str.substr(0, pos);
+        str = str.substr(pos, str.size());
+        return rest;
+    }
 
-        if ( ! minSize || otherStr[0] != str[0]) {
-            return NOT_FOUND;
-        }
-
-        for (size_t i = 1; i < minSize; i += 1) {
-            if (otherStr[i] != str[i]) {
-                result = PARTIAL;
-                break;
+    size_t contains(string & otherStr, size_t & i) {
+        size_t size = str.size();
+        size_t otherSize = otherStr.size();
+        for (i = 0; i < size; i += 1) {
+            if (str[i] != otherStr[i]) {
+                if (i >= otherSize) {
+                    return INSIDE;
+                } else if (i > 0) {
+                    return SPLIT_2;
+                } else {
+                    return NOT_FOUND;
+                }
             }
         }
-        return result;
+        if (size == otherSize) {
+            return FOUND;
+        }
+        return SPLIT_1;
     }
 
     friend class Tree;
