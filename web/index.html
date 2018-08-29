@@ -4,8 +4,63 @@
     <meta charset="utf-8">
     <title></title>
   </head>
+  <script>
+
+  //crear lista de lista de Datos
+    data =[
+      "poco",
+      "pocor",
+      "pocoo",
+      "pocoyo",
+      "poco AED",
+      "pocco",
+      "jorge Pocco",
+      "Jorge Pocco AED",
+    ];
+
+    //lista de obciones permitidas
+    var n =  data.length;
+    console.log("--> "+data[7]);
+
+    function sugerir(value){
+      /* La lista vacia al inicio de la funcion
+      *  si nos saltamos la misma lista se va repetir
+      */
+      document.getElementById('listaDatos').innerHTML='';
+      // l = value.length; // tamanio de el query
+
+      /* recorremos todo los datos comparando
+      *  si el valor eciste en nuestra lista,
+      *  para ello casteamos a minusculas
+      */
+      for(var  i = 0; i < n; i++){
+        // console.log("tolower->"+value.toString().toLowerCase());
+        // if( ((data[i].toLowerCase()).indexOf(value.toString().toLowerCase())) > (-1)){
+
+            var nodo  = document.createElement("option");
+            var value = document.createTextNode(data[i]);
+            console.log("data: "+value);
+            nodo.appendChild(value);
+            document.getElementById("listaDatos").appendChild(nodo);
+  			// }
+      }
+      // document.getElementById('listaDatos').innerHTML='';
+
+    }
+
+    function espacio(){
+      document.getElementById('listaDatos').innerHTML=' ';
+    }
+    //consulta get data string buscado
+    function querySearch(){
+      var value = document.getElementById("inputsearch").value;
+      console.log("data "+value);
+      location.href='main.html';
+    }
+
+  </script>
   <style>
-    .logo {
+    .center {
     display: block;
     margin-left: auto;
     margin-right: auto
@@ -15,22 +70,41 @@
       -moz-box-sizing: border-box;
       height: 100%;
       overflow: hidden;
-      padding: 5px 9px 0;
       padding-left: 9px;
+      width: 30%;
+      padding: 12px 20px;
+      box-shadow: 2px solid grey;
+      box-sizing: border-box;
     }
+    .button{
+      /* background-color: white; /* Green */ */
+    border: none;
+    background-color: white;
+    color: black;
+    border: 2px solid #e7e7e7;;
+    padding: 10px 32px;
+    text-align: center;
+    text-decoration: none;
+    /* display: inline-block; */
+    font-size: 16px;
+    }
+    .button:hover {background-color: #e7e7e7;}
   </style>
   <body>
     <div class="minigoogle">
-
     </div>
     <br>
     <div class="minigoogle">
-       <img src="img/altavista.png" class="logo"alt="Smiley face" width="272" height="92">
+       <img src="img/altavista.png" class="center"alt="Smiley face" width="272" height="92">
        <br>
-       <input type="text" name="" placeholder="buscar" class="logo index_input">
-       <!-- BUG: botton  -->
+       <input id="inputsearch" list="listaDatos" onkeyup="sugerir(this.value)" type="text" name="" placeholder="buscar" class="center index_input">
+       <datalist id="listaDatos" onclick="espacio()">
+         <!-- <option value="a"></option>
+         <option value="ab"></option> -->
+       </datalist>
+       <!--  botton  -->
        <br>
-       <button type="button" aria-label="Google Search" class="logo" name="btnK" type="submit"> Search</button>
+       <button type="button" onclick="querySearch()" aria-label="Google Search" class="center button" name="btnK" type="submit"> Search</button>
     </div>
   </body>
 </html>
