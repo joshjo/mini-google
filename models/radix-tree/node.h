@@ -2,6 +2,7 @@
 #define NODE_H
 #include <iostream>
 #include <string.h>
+#include "../common/common.h"
 // We are not considering the ñ letter
 #define ALPHABET_LENGTH 36
 #define NOT_FOUND 0

@@ -1,27 +1,8 @@
 #pragma once
-#include <fstream>
-#include <iostream>
-#include <stdio.h>
-#include <string>
-#include <map>
-#include <vector>
+#include "../common/common.h"
 
 using namespace std;
 //Struct Document
-
-struct Document {
-	int idDocument;
-	int idFile;
-	int start;
-	int end;
-};
-
-struct Word {
-	int idFile;
-	int start;
-	int end;
-	string content;
-};
 
 class Parse
 {
@@ -144,13 +125,13 @@ private:
 			{
 				//count++;
 				//Get information doc
+                int start = (int)inputFile.tellg() - line.length() - 1;
 				if (line.find(startLine) != string::npos)
 				{
 					//Init Document
 					tempDoc = new Document();
 					tempDoc->idDocument =  getInformation("id", line);
-					tempDoc->start = (int)inputFile.tellg() - line.length() - 2;
-
+					tempDoc->start = start;
 					tempDoc->idFile = idFile;
 
 				}
@@ -166,8 +147,9 @@ private:
 					size_t pos = 0;
 					string word;
 					string temp;
-					int initLine = (int)inputFile.tellg() - line.length() - 2;
-					//Procesar linea , obtener palabras;
+
+					int initLine = start;
+                    int spaces = 0;
 					while ((pos = line.find(" ")) != string::npos) {
 						word = line.substr(0, pos);
 						line.erase(0, pos + 1);
@@ -177,14 +159,16 @@ private:
 						{
 							Word objWord;
 							objWord.idFile = idFile;
-							objWord.start = initLine;
-							initLine += word.length();
-							objWord.end = initLine;
+							objWord.start = initLine + spaces;
+							initLine += pos;
+							objWord.end = initLine + spaces;
 							objWord.content = temp;
 							words.push_back(objWord);
-						}
-
-
+                            initLine += 1;
+                            spaces = 0;
+						} else {
+                            spaces += 1;
+                        }
 					}
 
 
