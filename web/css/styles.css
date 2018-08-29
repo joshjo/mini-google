@@ -1,0 +1,28 @@
+.PostSearch{
+    margin-bottom: 20px;
+    margin-top: 20px;
+    padding: 0 10% 0 5%;
+}
+.PostImg{
+    display: inline;
+}
+.logo-main{
+    height: 70px;
+}
+.PostForm{
+    display: inline;
+    vertical-align: middle;
+}
+.box-input{
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    width: 30%;
+}
+.box-input-button{
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+}
+
+.PostResult{
+    padding: 20 10% 20 10%;
+}
