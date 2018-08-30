@@ -3,12 +3,15 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
 #include <boost/bimap.hpp>
+#include <time.h>
 #include "../common/common.h"
 
 using namespace std;
 
-bool cmp(pair<int, unsigned short int> & a, pair<int, unsigned short int> & b) {
-    return b.second > a.second;
+struct cmp
+{
+    template<class T>
+    bool operator()(T const &a, T const &b) const { return a > b; }
 };
 
 //Struct Document
@@ -179,9 +182,9 @@ private:
         // g1.push_back("spanishText_445000_450000");
         // g1.push_back("spanishText_450000_455000");
         // g1.push_back("spanishText_455000_460000");
-        g1.push_back("spanishText_460000_465000");
-        g1.push_back("spanishText_465000_470000");
-        g1.push_back("spanishText_470000_475000");
+        // g1.push_back("spanishText_460000_465000");
+        // g1.push_back("spanishText_465000_470000");
+        // g1.push_back("spanishText_470000_475000");
         g1.push_back("spanishText_475000_480000");
         g1.push_back("spanishText_480000_485000");
         return g1;
@@ -230,7 +233,7 @@ private:
                         line.erase(0, pos + 1);
                         temp = removeCharacter(word);
                         if (temp.length() > 1) {
-                            t->add(temp, idDocument);
+                            t->add(temp, idDocument, start);
                         }
                     }
                 }
@@ -255,10 +258,11 @@ public:
         unordered_map <int, unsigned short int> directories;
         unordered_map <int, unsigned short int> pageranks;
 
-        boost::bimap<int, unsigned short int> intersections;
-        // unordered_map <int, unsigned short int> intersections;
+        unordered_map <int, unsigned short int> intersections;
 
+        unordered_map <int, vector<int> > positions;
 
+        clock_t tStart = clock();
 
         int size = words.size();
 
@@ -271,7 +275,8 @@ public:
                     // cout << "idDocument: " << it->first << endl;
                     int idDocument = it->first;
                     directories[idDocument] += 1;
-                    pageranks[idDocument] += it->second;
+                    pageranks[idDocument] += it->second.pagerank;
+                    positions[idDocument].push_back(it->second.start);
                 }
             }
         }
@@ -279,21 +284,38 @@ public:
         for (auto it = directories.begin(); it != directories.end(); it++) {
             int idDocument = it->first;
             if (it->second == size) {
-                results.insert(results_bimap::value_type(
-                    results[idDocument], pageranks[idDocument]));
-                // results[idDocument] += pageranks[idDocument];
+                intersections[idDocument] += pageranks[idDocument];
             }
         }
+        double end = (double)(clock() - tStart) / CLOCKS_PER_SEC;
 
-        // vector<pair<int, unsigned short int> > result(
-        //     intersections.begin(), intersections.end());
+        vector <pair <unsigned short int, int> > result;
 
-        // sort(intersections.begin(), intersections.end());
+        for (auto it = intersections.begin(); it != intersections.end(); it++) {
+            result.push_back(*new pair<unsigned short int, int> (it->second, it->first));
+        }
 
+        sort(result.begin(), result.end(), cmp());
+
+        // vector <pair <int, unsigned short int> result (
+        //     intersections.begin(), intersections.end())
+
+        // sort(result.begin(), result.end(), [](auto &left, auto &right) {
+        //     return left.second < right.second;
+        // });
         // cout << "=== resultado ===" << endl;
-        // for (auto it = result.begin(); it != result.end(); it++) {
-        //     cout << "idDocument: " << it->first << " - " << it->second << endl;
-        // }
+        for (auto it = result.begin(); it != result.end(); it++) {
+            cout << "idDocument: " << it->first << " - " << it->second << endl;
+            cout << "positions: " << endl;
+            auto range = positions.equal_range(it->second);
+            vector<int> pos = range.first->second;
+            for (int i = 0; i < pos.size(); i++) {
+                cout << pos[i] << " - ";
+            }
+            cout << endl;
+        }
+
+        printf("Time taken: %.8fs\n", end);
 
         // Node * node;
         // bool found = t->find(word, node);

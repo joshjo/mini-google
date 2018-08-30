@@ -2,6 +2,7 @@
 #define TREE_H
 #include "node.h"
 
+
 class Coincidence {
 private:
     vector<Word *> all;
@@ -173,11 +174,11 @@ public:
         print(root);
     }
 
-    void add(string str, int & word) {
+    void add(string str, int & word, int & start) {
         // string str;
 
         if ( ! root) {
-            root = new Node(word, str, true);
+            root = new Node(word, str, true, start);
             return;
         }
         Node * node;
@@ -192,23 +193,26 @@ public:
             cout << "parent: " << parent << endl;
         }
         if (kase == NOT_FOUND) {
-            createEmptyRoot(word, str);
+            createEmptyRoot(word, str, start);
         } else if (kase == SPLIT_2) {
-            splitNode(word, node, str, position);
+            splitNode(word, node, str, position, start);
         } else if (kase == SPLIT_1) {
             // cout << "split 1" << endl;
-            createNode(word, node, str);
+            createNode(word, node, str, start);
         } else if (kase == INSIDE) {
-            createNode(word, node, str, position);
+            createNode(word, node, str, position, start);
         } else if (kase == FOUND) {
             node->isWord = true;
-            node->directory[word] += 1;
+            node->directory[word].pagerank += 1;
+            if (node->directory[word].start == 0) {
+                node->directory[word].start = start;
+            }
         }
 
     }
 
 private:
-    void createEmptyRoot(int & word, string & str) {
+    void createEmptyRoot(int & word, string & str, int & start) {
         if (root->str != "") {
             Node * tmp = root;
             root = new Node();
@@ -216,7 +220,7 @@ private:
             tmp->parent = root;
         }
 
-        Node * newNode = new Node(word, str, true);
+        Node * newNode = new Node(word, str, true, start);
         root->sons[p(str[0])] = newNode;
         newNode->parent = root;
     }
@@ -224,10 +228,11 @@ private:
             int & word,
             Node * & node,
             string & str,
-            size_t position
+            size_t position,
+            int & start
         ) {
         string res = node->reverseCut(position);
-        Node * newParent = new Node(word, res, true);
+        Node * newParent = new Node(word, res, true, start);
         Node * grandparent = node->parent;
         if (node == root) {
             root = newParent;
@@ -240,8 +245,8 @@ private:
         node->parent = newParent;
     }
 
-    void createNode(int & word, Node * & node, string & str) {
-        Node * newNode = new Node(word, str, true);
+    void createNode(int & word, Node * & node, string & str, int & start) {
+        Node * newNode = new Node(word, str, true, start);
         node->sons[p(str[0])] = newNode;
         newNode->parent = node;
     }
@@ -250,13 +255,14 @@ private:
             int & word,
             Node * & node,
             string & str,
-            size_t position
+            size_t position,
+            int & start
         ) {
         if (shouldPrint) cout << "splitting: " << (node == root) << endl;
         if (shouldPrint) cout << "node: " << node->parent->str << endl;
         char nodeIndex = node->str[0];
         string res = node->reverseCut(position);
-        Node * newParent = new Node(word, res, false);
+        Node * newParent = new Node(word, res, false, start);
         Node * parent = node->parent;
         if (node == root) {
             root = newParent;
@@ -275,7 +281,7 @@ private:
 
 
         string substr = str.substr(position, str.size());
-        Node * second = new Node(word, substr, true);
+        Node * second = new Node(word, substr, true, start);
         newParent->sons[p(substr[0])] = second;
         second->parent = newParent;
 

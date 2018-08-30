@@ -53,7 +53,8 @@ public:
     string str;
 
 public:
-    unordered_map <int, unsigned short int> directory;
+    unordered_map <int, WordDoc> directory;
+
     Node() {
         this->str = "";
         this->sons = new Node * [ALPHABET_LENGTH];
@@ -64,7 +65,7 @@ public:
         }
     }
 
-    Node(int doc, string & str, bool isWord = false) {
+    Node(int doc, string & str, bool isWord, int & start) {
         this->str = str;
         this->sons = new Node * [ALPHABET_LENGTH];
         this->isWord = isWord;
@@ -72,7 +73,7 @@ public:
         for (int i = 0; i < ALPHABET_LENGTH; i += 1) {
             this->sons[i] = 0;
         }
-        directory[doc] += 1;
+        directory[doc].pagerank += 1;
     }
 
     string cut(size_t pos) {

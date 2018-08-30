@@ -21,10 +21,15 @@ struct Document {
 
 struct WordDoc {
     unsigned short int pagerank;
-    unsigned int idDocument;
+    unsigned int start;
 
-    WordDoc(unsigned short int idDocument) {
-        this->idDocument = idDocument;
+    WordDoc() {
+        pagerank = 0;
+        start = 0;
+    }
+
+    WordDoc(int & start) {
+        this->start = start;
         pagerank = 1;
     }
 
