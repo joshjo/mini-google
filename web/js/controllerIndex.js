@@ -165,5 +165,6 @@ autocomplete(document.getElementById("myInput"), dataSuggest);
 function querySearch(){
   var value = document.getElementById("myInput").value;
   console.log("data "+value);
+  window.localStorage.setItem("searchValue", value); //guardar el valor en el localStorage
   location.href='main.html';
 }

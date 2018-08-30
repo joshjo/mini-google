@@ -1,4 +1,13 @@
 
+/* funcion que ejecuta al momento de cargar la ventana main search:*/
+window.onload = function() {
+
+  /* hacemos el get desde el localStorage  y lo cargamos en el textfield:*/
+   document.getElementById("search").value = localStorage.getItem("searchValue");
+
+}
+
+
 var message = "\
     <a href='/getDocument/../{0}/../content.html'>{1}</a>\
         <div class='PostBody'>\
@@ -63,13 +72,13 @@ function findWord(message, word){
 
 function handlePosts(){
     //var elements = document.getElementById("result");
-    //for (var i=0; i<elements.length; i++){         
-    //    var UnBoton = document.createElement("LI"); 
+    //for (var i=0; i<elements.length; i++){
+    //    var UnBoton = document.createElement("LI");
     //    document.createTextNode ('<input type="button" name="boton7" value=" 7 ">');
     //    elements.appendChild(UnBoton);
     //}
     var div_result = document.getElementById("result");
-    for (var i=0; i<10; i++){ 
+    for (var i=0; i<10; i++){
         var node = document.createElement("div");
         //var textnode = document.createTextNode(message.format(id, title, body, dbIndex));
         //var textnode = document.createTextNode(messag.format(title));
@@ -78,4 +87,12 @@ function handlePosts(){
         node.setAttribute("class","PostResult");
         div_result.appendChild(node);
     }
+}
+/*enlaza y ejecuta la nueva pagina con el contenido en resumen:*/
+function linkToContent(){
+  /*get the tag a value :*/
+    var linkName = document.getElementsByTagName("a").value;
+  console.log("value of link clicked"+linkName);
+  // alert("value of link clicked"+linkName);
+  location.href='content.html';
 }

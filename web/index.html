@@ -2,109 +2,9 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>mini google</title>
+    <title>mini google ucsp</title>
     <link rel="stylesheet" href="css/styles.css">
   </head>
-  <style>
-    .center {
-    display: block;
-    margin-left: auto;
-    margin-right: auto
-    }
-    .index_input{
-      box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      height: 100%;
-      overflow: hidden;
-      padding-left: 9px;
-      width: 30%;
-      padding: 12px 20px;
-      box-shadow: 2px solid grey;
-      box-sizing: border-box;
-    }
-    .button{
-      /* background-color: white; /* Green */ */
-    border: none;
-    background-color: white;
-    color: black;
-    border: 2px solid #e7e7e7;;
-    padding: 10px 32px;
-    text-align: center;
-    text-decoration: none;
-    /* display: inline-block; */
-    font-size: 16px;
-    }
-    .button:hover {background-color: #e7e7e7;}
-    /* ------------------------------------------------------------------------- */
-  * {
-  box-sizing: border-box;
-}
-
-body {
-  font: 16px Arial;
-}
-
-.autocomplete {
-  /*the container must be positioned relative:*/
-  position: relative;
-  /* display: inline-block; */
-}
-
-input {
-  border: 1px solid transparent;
-  background-color: #f1f1f1;
-  padding: 10px;
-  font-size: 16px;
-}
-
-input[type=text] {
-  background-color: #f1f1f1;
-  width: 100%;
-}
-
-.box-input{
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    width: 30%;
-}
-
-input[type=submit] {
-  background-color: #f8f8f8;//DodgerBlue;
-  color: #222;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.autocomplete-items {
-  position: absolute;
-  border: 1px solid #d4d4d4;
-  border-bottom: 1px solid #d4d4d4; //cambio
-  border-top: none;
-  z-index: 99;
-  /*position the autocomplete items to be the same width as the container:*/
-  top: 100%;
-  left: 0;
-  right: 0;
-}
-
-.autocomplete-items div {
-  padding: 10px;
-  cursor: pointer;
-  background-color: #fff;
-  /* border-bottom: 1px solid #d4d4d4; */
-}
-
-.autocomplete-items div:hover {
-  /*when hovering an item:*/
-  background-color: #e9e9e9;
-}
-
-.autocomplete-active {
-  /*when navigating through the items using the arrow keys:*/
-  background-color: DodgerBlue !important;
-  color: #ffffff;
-}
-  </style>
   <body>
     <div class="minigoogle">
     </div>
@@ -113,13 +13,17 @@ input[type=submit] {
        <img src="img/altavista.png" class="center"alt="Smiley face" width="272" height="92">
        <br>
        <!-- autocompletado en div y un text field -->
-       <div id="autocompleteDiv" class="autocomplete center " style="width:300px;">
+       <div id="autocompleteDiv" class="autocomplete center " style="width:40%;">
          <input id="myInput" type="text" name="myCountry" placeholder="Buscar en Mini altavista" >
        </div>
        <br>
        <br>
        <button type="button" onclick="querySearch()" aria-label="Google Search" class="center button" name="btnK" type="submit"> Search</button>
     </div>
+
+    <div class="minigoogle">
+  		<p>Inspired by <a href="github/minigoogle" target="_blank"> minigoogle</a>.</p>
+  	</div>
   <script type="text/javascript" src="js/controllerIndex.js"></script>
   </body>
 </html>

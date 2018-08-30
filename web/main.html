@@ -14,21 +14,34 @@
             </div>
             <div class="PostForm">
                 <!--form method="GET" onSubmit="handlePosts()" action="/getPosts" class="PostForm"-->
-                    <input type="text"   id="search" class="box-input" name="search" placeholder="Search">
-                    <input type="button" onclick="handlePosts()" class="box-input-button" value="Send"/>
+                    <!-- <input type="text"   id="search" class="box-input" name="search" placeholder="Search"> -->
+                    <div id="autocompleteDiv" class="autocomplete PostForm" >
+                        <input id="search" class="box-input" name="search" placeholder="Search">
+                    </div>
+
+                    <!-- <input type="button" onclick="handlePosts()" class="box-input-button" value="Search"/> -->
+                    <input type="button" onclick="handlePosts()"  class="btn btn--search "value="Search"/>
                 <!--/form-->
             </div>
-            <div id="time">
-                0.112132
-            </div>
-            <div id="count">
-                922005
-            </div>
+        </div>
+        <div>
+        <hr style="color:#f1f1f1" >
         </div>
 
-        <div id="result">
+        <div class="resultStatistic">
+          cerca de
+          <span id="time" class="timeStat">
+            0.112132
+          </span> resultados en
+          <span id="count" class="countStat">
+            0.015
+          </span>
+            sg.
+        </div>
+
+        <div id="result" class="resultContent">
             <div class="PostResult">
-                <a href="/getDocument/12354">First Post</a>
+                <a href="content.html" onclick="linkToContent()">First Post</a>
                 <div class="PostBody">
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
                     incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
@@ -42,9 +55,9 @@
                 </div>
             </div>
         </div>
-
         <!-- JavaScript -->
         <script src="js/controllerMain.js"></script>
+        <script src="js/controllerIndex.js"></script>
     </body>
     <footer>
 
