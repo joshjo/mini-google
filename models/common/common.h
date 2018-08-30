@@ -7,6 +7,8 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <algorithm>
+#include <unordered_map>
 
 using namespace std;
 
@@ -19,10 +21,10 @@ struct Document {
 
 struct WordDoc {
     unsigned short int pagerank;
-    unsigned short int idFile;
+    unsigned int idDocument;
 
-    WordDoc(unsigned short int idFile) {
-        this->idFile = idFile;
+    WordDoc(unsigned short int idDocument) {
+        this->idDocument = idDocument;
         pagerank = 1;
     }
 

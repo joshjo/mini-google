@@ -35,9 +35,9 @@ public:
         printSons(root);
     }
 
-    bool find(string str, string & word) {
+    bool find(string str, Node * & node) {
         size_t position = 0;
-        Node * node = root;
+        node = root;
         Node * next;
         size_t result;
         string prevStr = str;
@@ -56,7 +56,6 @@ public:
         // cout << "str size " << prevStr << endl;
         // cout << "node isw " << node->str << endl;
         if ((prevStr == node->str) && node->isWord) {
-            word = node->word;
             return true;
         }
         return false;
@@ -112,40 +111,6 @@ public:
         }
         return result;
     }
-
-    // void add (string str) {
-    //     // if (str == "HELLO") {
-    //     //     shouldPrint = true;
-    //     // }
-    //     if ( ! root) {
-    //         root = new Node(str, true);
-    //         return;
-    //     }
-    //     Node * node;
-    //     Node * parent;
-    //     size_t position;
-
-    //     size_t kase = find(str, node, parent, position);
-    //     if (shouldPrint) {
-    //         cout << "+++: " << str << endl;
-    //         cout << "kase: " << kase << endl;
-    //         cout << "node: " << node->str << " - " << node << endl;
-    //         cout << "parent: " << parent << endl;
-    //     }
-    //     if (kase == NOT_FOUND) {
-    //         createEmptyRoot(str);
-    //     } else if (kase == SPLIT_2) {
-    //         splitNode(node, str, position);
-    //     } else if (kase == SPLIT_1) {
-    //         // cout << "split 1" << endl;
-    //         createNode(node, str);
-    //     } else if (kase == INSIDE) {
-    //         createNode(node, str, position);
-    //     } else if (kase == FOUND) {
-    //         node->isWord = true;
-    //     }
-
-    // }
 
     void graphviz(Node * & node, string & tree) {
         if ( ! node) {
@@ -208,8 +173,8 @@ public:
         print(root);
     }
 
-    void add (string word) {
-        string str = word;
+    void add(string str, int & word) {
+        // string str;
 
         if ( ! root) {
             root = new Node(word, str, true);
@@ -237,12 +202,13 @@ public:
             createNode(word, node, str, position);
         } else if (kase == FOUND) {
             node->isWord = true;
+            node->directory[word] += 1;
         }
 
     }
 
 private:
-    void createEmptyRoot(string & word, string & str) {
+    void createEmptyRoot(int & word, string & str) {
         if (root->str != "") {
             Node * tmp = root;
             root = new Node();
@@ -255,7 +221,7 @@ private:
         newNode->parent = root;
     }
     void createNode(
-            string & word,
+            int & word,
             Node * & node,
             string & str,
             size_t position
@@ -274,14 +240,14 @@ private:
         node->parent = newParent;
     }
 
-    void createNode(string & word, Node * & node, string & str) {
+    void createNode(int & word, Node * & node, string & str) {
         Node * newNode = new Node(word, str, true);
         node->sons[p(str[0])] = newNode;
         newNode->parent = node;
     }
 
     void splitNode(
-            string & word,
+            int & word,
             Node * & node,
             string & str,
             size_t position
