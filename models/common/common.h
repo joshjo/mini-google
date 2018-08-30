@@ -7,6 +7,8 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <sstream>
+#include <set>
 #include <algorithm>
 #include <unordered_map>
 
@@ -17,6 +19,12 @@ struct Document {
     unsigned short int idFile;
     int start;
     int end;
+};
+
+struct DocIndex {
+    string content;
+    string title;
+    int idDocument;
 };
 
 struct WordDoc {

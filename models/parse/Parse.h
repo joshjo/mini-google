@@ -14,242 +14,220 @@ struct cmp
     bool operator()(T const &a, T const &b) const { return a > b; }
 };
 
-//Struct Document
-
 class Parse
 {
 private:
-    string pathDocuments;
-    int countFiles;
-    map<int, string> files;
-    map<int, Document*> documents;
+	string pathDocuments;
+	int countFiles;
+	map<int, string> files;
+	map<int, Document*> documents;
     size_t pos;
     string word;
     map<string *, WordDoc *> pagerank;
     Tree * t;
+	set<string> stopWords;
 
-    // vector<Word *> words;
+	//Variables constantes
+	const string startDoc= "<doc";
+	const string endDoc = "</doc>";
+	const string delimiterId = "id";
 
-    string removeCharacter(string word)
-    {
-        string newWord = "";
-        for (int i = 0 ; i < word.length() ; i ++)
-        {
-            unsigned char charAt = word[i];
-            int c = (int)charAt;
+	//ofstream outputFile;
 
-            if ((c <= 57 && c >= 48) || (c <= 122 && c >= 97) || (c <= 90 && c >= 65))
-            {
-                newWord += toupper(c);
-            }
-            else if( c == 13)
-            {
-                newWord += toupper(c);
-            }
-            else if (c == 225 || c == 226 || c == 227 || c == 228 || c == 230 || c == 224 || c==229) {
-                    newWord += "A";
-                }
-            else if (c == 233 || c == 234 || c == 235 || c == 201 || c == 232) {
-                newWord += "E";
-            }
-            else if (c == 236 || c == 237) {
-                newWord += "I";
-            }
-            else if(c == 210 || c == 211 || c == 243) {
-                newWord += "O";
-            }
-            else if ((c <= 220 && c >= 217) || (c <= 252 && c >= 249))
-            {
-                newWord += "U";
-            }
-            else if (c == 199 || c == 212 || c == 231)
-            {
-                newWord += "C";
-            }
-            else if (c == 209)
-            {
-                newWord += "N";
-            }
-            else if (c == 181)
-            {
-                newWord += "U"; //micro
-            }
-            else
-            {
-                /*if ((c <= 47 && c >= 33) || (c <= 63 && c >= 58) || (c <= 96 && c >= 91) || (c <= 126 && c >= 123) || (c <= 159 && c >= 156) | (c <= 180 && c >= 166) || (c <= 188 && c >= 184) || (c <= 197 && c >= 191)
-                    || (c <= 208 && c >= 202) || (c <= 223 && c >= 213) || (c <= 255 && c >= 244) || (c <= 242 && c >= 238) || (c == 200) || c == 183 || c == 161 || c == 160)
-                {
-                    newWord += " ";
-                }
-                cout << word << "-" << i << "ascii: " << c << endl;*/
+	void initStopWords()
+	{
+		ifstream stopFile;
+		stopFile.open("parse/stopwords");
+		string sw;
+		while( stopFile >> sw)
+		{
+			stopWords.insert(sw);
 
-                //Caracteres en blanco
-                /*else if (c == 189 || c == 164)
-                {
-                    newWord += " ";//"�il"  //"�,"
-                }
-                else if (c == 163 || c == 198 || c == 230 || c == 64)
-                {
-                    newWord += " "; //�tla  230 198         //@ 64 //163 �
-                }
-                else if (c == 165)
-                {
-                    newWord += " ";//� 165
-                }
-                else if (c == 182)
-                {
-                    newWord += " ";//* 182
-                }
-                else if (c == 162)
-                {
-                    newWord += " ";//% 162
-                }
-                else if (c == 190)
-                {
-                    newWord += " ";// �
-                }*/
-            }
-
-
+		}
+        auto it = stopWords.begin();
+        if (it == stopWords.end()) {
+            cout << "WARNING: Stopwords are not being loaded" << endl;
         }
-        return newWord;
-    };
+	}
 
-    int getInformation(string delimiter, string line)
-    {
-        unsigned int ini = line.find(delimiter);
-        ini = ini + delimiter.length() + 2; // = + "
-        line.erase(0, ini);
-        unsigned int end = line.find("\"");
-        string result = line.substr(0, end);
+	string removeCharacter(string word)
+	{
+		string newWord = "";
+		unsigned char charAt;
+		int c;
+		for (int i = 0 ; i < word.length() ; i ++)
+		{
+			charAt = word[i];
+			c = (int)charAt;
+			if((c >= 48 && c <= 57) || (c >= 65 && c <= 90)
+				|| (c >= 97 && c <= 122))
+				newWord += toupper(c);
+			else if( c == 209 || c == 241)
+				newWord += "N"; //ñ
+			else if( (c >= 192 && c <= 194) || c == 196 || (c >= 224 && c <= 226) || c == 228)
+				newWord += "A"; //á
+			else if( (c >= 200 && c <= 203) || (c >= 232 && c <= 235) )
+				newWord += "E"; //É é
+			else if((c >= 204 && c <= 207) || (c >= 236 && c <= 239) )
+				newWord += "I"; //í
+			else if((c >= 210 && c <= 211) || c == 214 || c == 220 || (c >= 242 && c <= 244) || c == 246 || c == 252)
+				newWord += "O"; //ó
+			else if((c >= 217 && c <= 219) || (c >= 249 && c <= 250) )
+				newWord += "U"; //ú
+			 /*else
+			 {
+			 	cout << word << " - " << newWord << endl;
+			 	cout << word[i] << "- ascii: " << c << endl;
+			 	break;
+			 }*/
 
-        return stoi(result);
-    };
+		}
+		//cout << word << "-"<< newWord << endl << endl;
+		return newWord;
+	};
 
-    vector<string> obtenerDirectorio()
-    {
-        vector<string> g1;
-        // g1.push_back("test");
-        // g1.push_back("spanishText_15000_20000");
-        // g1.push_back("spanishText_20000_25000");
-        // g1.push_back("spanishText_25000_30000");
-        // g1.push_back("spanishText_40000_45000");
-        // g1.push_back("spanishText_45000_50000");
-        // g1.push_back("spanishText_70000_75000");
-        // g1.push_back("spanishText_90000_95000");
-        // g1.push_back("spanishText_110000_115000");
-        // g1.push_back("spanishText_120000_125000");
-        // g1.push_back("spanishText_180000_185000");
-        // g1.push_back("spanishText_185000_190000");
-        // g1.push_back("spanishText_200000_205000");
-        // g1.push_back("spanishText_205000_210000");
-        // g1.push_back("spanishText_210000_215000");
-        // g1.push_back("spanishText_225000_230000");
-        // g1.push_back("spanishText_230000_235000");
-        // g1.push_back("spanishText_260000_265000");
-        // g1.push_back("spanishText_265000_270000");
-        // g1.push_back("spanishText_270000_275000");
-        // g1.push_back("spanishText_270000_275000");
-        // g1.push_back("spanishText_285000_290000");
-        // g1.push_back("spanishText_305000_310000");
-        // g1.push_back("spanishText_310000_315000");
-        // g1.push_back("spanishText_315000_320000");
-        // g1.push_back("spanishText_320000_325000");
-        // g1.push_back("spanishText_325000_330000");
-        // g1.push_back("spanishText_330000_335000");
-        // g1.push_back("spanishText_335000_340000");
-        // g1.push_back("spanishText_340000_345000");
-        // g1.push_back("spanishText_345000_350000");
-        // g1.push_back("spanishText_350000_355000");
-        // g1.push_back("spanishText_355000_360000");
-        // g1.push_back("spanishText_360000_365000");
-        // g1.push_back("spanishText_365000_370000");
-        // g1.push_back("spanishText_370000_375000");
-        // g1.push_back("spanishText_375000_380000");
-        // g1.push_back("spanishText_380000_385000");
-        // g1.push_back("spanishText_385000_390000");
-        // g1.push_back("spanishText_390000_395000");
-        // g1.push_back("spanishText_395000_400000");
-        // g1.push_back("spanishText_400000_405000");
-        // g1.push_back("spanishText_405000_410000");
-        // g1.push_back("spanishText_410000_415000");
-        // g1.push_back("spanishText_415000_420000");
-        // g1.push_back("spanishText_420000_425000");
-        // g1.push_back("spanishText_425000_430000");
-        // g1.push_back("spanishText_430000_435000");
-        // g1.push_back("spanishText_435000_440000");
-        // g1.push_back("spanishText_440000_445000");
-        // g1.push_back("spanishText_445000_450000");
-        // g1.push_back("spanishText_450000_455000");
-        // g1.push_back("spanishText_455000_460000");
-        // g1.push_back("spanishText_460000_465000");
-        // g1.push_back("spanishText_465000_470000");
-        // g1.push_back("spanishText_470000_475000");
-        g1.push_back("spanishText_475000_480000");
-        g1.push_back("spanishText_480000_485000");
-        return g1;
-    };
 
-    void readFile(int idFile, string nameFile)
-    {
-        // unordered_map<string, WordDoc *> tempMap;
-        int start, initLine, spaces, idDocument;
-        ifstream inputFile;
-        inputFile.open(pathDocuments + "/" + nameFile);
-        if (inputFile)
-        {
-            cout << "File Found : " << nameFile << endl;
-            string line = "";
-            string startLine = "<doc";
-            string endLine = "</doc>";
-            Document *tempDoc = NULL;
-            for (string line; getline(inputFile, line); )
-            {
+	int getInformation(string delimiter, string line)
+	{
+		size_t pos = line.find(delimiter) + delimiter.length() + 2;
+		line.erase(0, pos);
+		pos = line.find("\"");
+		return stoi(line.substr(0, pos));
+	};
+
+	void readFile(int idFile, string nameFile)
+	{
+        int start, idDocument;
+		ifstream inputFile;
+		inputFile.open(pathDocuments + nameFile);
+		if (inputFile)
+		{
+			//outputFile  << pathDocuments << nameFile << endl;
+			cout << "File Found " << nameFile << endl;
+			Document *tempDoc = NULL;
+			//int count = 0;
+			for (string line; getline(inputFile, line); )
+			{
+				//count++;
+				//Get information doc
                 start = (int)inputFile.tellg() - line.length() - 1;
-                if (line.find(startLine) != string::npos)
-                {
-                    tempDoc = new Document();
-                    idDocument = getInformation("id", line);
+				/*cout << "star line" << start << endl;
+				cout << line << endl;*/
+				if (line.find(startDoc) != string::npos)
+				{
+					//Init Document
+					tempDoc = new Document();
+					idDocument = getInformation(delimiterId, line);
                     tempDoc->idDocument = idDocument;
-                    tempDoc->start = start;
-                    tempDoc->idFile = idFile;
+					tempDoc->start = start;
+					tempDoc->idFile = idFile;
+					// cout << "Leyendo documento " << tempDoc->idDocument;
 
-                }
-                else if (line.find(endLine) != string::npos)
-                {
-                    tempDoc->end = inputFile.tellg();
-                    documents.insert(make_pair(tempDoc->idDocument, tempDoc));
-                }
-                else
-                {
-                    pos = 0;
-                    word = "";
-                    string temp;
+				}
+				else if (line.find(endDoc) != string::npos)
+				{
+					//Add document
+					tempDoc->end = inputFile.tellg();
+					documents.insert(make_pair(tempDoc->idDocument, tempDoc));
+					// cout << " Fin de lectura" << tempDoc->idDocument << endl;
 
-                    initLine = start;
-                    spaces = 0;
-                    while ((pos = line.find(" ")) != string::npos) {
-                        word = line.substr(0, pos);
-                        line.erase(0, pos + 1);
-                        temp = removeCharacter(word);
-                        if (temp.length() > 1) {
+				}
+				else
+				{
+
+					//int initLine = start;
+					string word, temp;
+					istringstream readLine(line);
+					//int posLast = line.length();
+					int pos = 0;// TODO
+					while (readLine >> word)
+					{
+						temp = removeCharacter(word);
+						set<string>::iterator a = stopWords.find(temp);
+						if(a == stopWords.end() && temp.length() > 1)
+						{
+							/*pos = (int)readLine.tellg();
+							Word * objWord = new Word();
+							objWord->idFile = idFile;
+							objWord->start = (pos > 0)? pos - temp.length() + start: start;
+							*/
+                            // cout << temp << endl;
                             t->add(temp, idDocument, start);
-                        }
-                    }
-                }
-            }
-            string word;
-            while (inputFile >> word)
-            {
-                removeCharacter(word);
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			cout << "File not Found" << endl;
+		}
+	};
 
-            }
-        }
-        else
-        {
-            cout << "File not Found" << endl;
-        }
-    };
+	vector<string> obtenerDirectorio()
+	{
+		vector<string> g1;
+		//g1.push_back("prueba");
+		// g1.push_back("spanishText_10000_15000");
+  //       g1.push_back("spanishText_15000_20000");
+		// g1.push_back("spanishText_20000_25000");
+		// g1.push_back("spanishText_25000_30000");
+		// g1.push_back("spanishText_40000_45000");
+		// g1.push_back("spanishText_45000_50000");
+		// g1.push_back("spanishText_70000_75000");
+		// g1.push_back("spanishText_90000_95000");
+		// g1.push_back("spanishText_110000_115000");
+		// g1.push_back("spanishText_120000_125000");
+		// g1.push_back("spanishText_180000_185000");
+		// g1.push_back("spanishText_185000_190000");
+		// g1.push_back("spanishText_200000_205000");
+		// g1.push_back("spanishText_205000_210000");
+		// g1.push_back("spanishText_210000_215000");
+		// g1.push_back("spanishText_225000_230000");
+		// g1.push_back("spanishText_230000_235000");
+		// g1.push_back("spanishText_260000_265000");
+		// g1.push_back("spanishText_265000_270000");
+		// g1.push_back("spanishText_270000_275000");
+		// g1.push_back("spanishText_270000_275000");
+		// g1.push_back("spanishText_285000_290000");
+		// g1.push_back("spanishText_305000_310000");
+		// g1.push_back("spanishText_310000_315000");
+		// g1.push_back("spanishText_315000_320000");
+		// g1.push_back("spanishText_320000_325000");
+		// g1.push_back("spanishText_325000_330000");
+		// g1.push_back("spanishText_330000_335000");
+		// g1.push_back("spanishText_335000_340000");
+		// g1.push_back("spanishText_340000_345000");
+		// g1.push_back("spanishText_345000_350000");
+		// g1.push_back("spanishText_350000_355000");
+		// g1.push_back("spanishText_355000_360000");
+		// g1.push_back("spanishText_360000_365000");
+		// g1.push_back("spanishText_365000_370000");
+		// g1.push_back("spanishText_370000_375000");
+		// g1.push_back("spanishText_375000_380000");
+		// g1.push_back("spanishText_380000_385000");
+		// g1.push_back("spanishText_385000_390000");
+		// g1.push_back("spanishText_390000_395000");
+		// g1.push_back("spanishText_395000_400000");
+		// g1.push_back("spanishText_400000_405000");
+		// g1.push_back("spanishText_405000_410000");
+		// g1.push_back("spanishText_410000_415000");
+		// g1.push_back("spanishText_415000_420000");
+		// g1.push_back("spanishText_420000_425000");
+		// g1.push_back("spanishText_425000_430000");
+		// g1.push_back("spanishText_430000_435000");
+		// g1.push_back("spanishText_435000_440000");
+		// g1.push_back("spanishText_440000_445000");
+		// g1.push_back("spanishText_445000_450000");
+		// g1.push_back("spanishText_450000_455000");
+		// g1.push_back("spanishText_455000_460000");
+		// g1.push_back("spanishText_460000_465000");
+		// g1.push_back("spanishText_465000_470000");
+		// g1.push_back("spanishText_470000_475000");
+		g1.push_back("spanishText_475000_480000");
+		g1.push_back("spanishText_480000_485000");
+		return g1;
+	};
 
 public:
     void find(string word) {
@@ -309,9 +287,12 @@ public:
             cout << "positions: " << endl;
             auto range = positions.equal_range(it->second);
             vector<int> pos = range.first->second;
-            for (int i = 0; i < pos.size(); i++) {
-                cout << pos[i] << " - ";
+            if (pos.size()) {
+                cout << getText(it->second, pos[0]) << " - ";
             }
+            // for (int i = 0; i < pos.size(); i++) {
+            //     cout << pos[i] << " - ";
+            // }
             cout << endl;
         }
 
@@ -328,25 +309,90 @@ public:
         //     cout << "buuuuuu :(" << endl;
         // }
 
+    };
+
+    DocIndex getDocument(int idDocument) {
+        Document * doc = documents[idDocument];
+        string s;
+        ifstream inputFile;
+        inputFile.open(pathDocuments + fileName);
+        int start = doc->start;
+        int end = doc->end;
+        inputFile.seekg(start);
+        s.resize(end - start);
+        inputFile.read(&s[0], end - start);
+
+
+        return s;
     }
 
-    Parse(string pathDirectory)
+
+    string getText(int idDocument, int start)
     {
-        this->pos = 0;
-        this->pathDocuments = pathDirectory;\
-        this->t = new Tree();
+        ifstream ifs;
+        Document * doc = documents[idDocument];
+        cout << "doc: " << idDocument << endl;
+        if ( ! doc) {
+            return "";
+        }
+        string s;
+        string fileName = files[doc->idFile];
+        // cout << "start: " << start << endl;
+
+        if (fileName != "") {
+            ifstream inputFile;
+            inputFile.open(pathDocuments + fileName);
+            int end = start + 30;
+            inputFile.seekg(start);
+            s.resize(end - start);
+            inputFile.read(&s[0], end - start);
+        }
+        return s;
+
+        // //Get Obj Document  by idodcumento
+        // if(documents.find(idDocument) != documents.end())
+        // {
+        //     Document *doc = documents.at(idDocument);
+        //     //Get File
+        //     if(files.find(doc->idFile) != files.end())
+        //     {
+        //         string name = files.at(doc->idFile);
+        //         //Si se tiene end  ini de word?
+        //         ifs.open (pathDocuments + name);
+        //         ifs.seekg(start);//(doc->start);
+        //         // int length = ifs.tellg();
+        //         int length = 30;
+        //         char * buffer = new char [length];
+        //         //string buffer;
+        //         ifs.read(buffer,length);
+        //         string out(buffer);
+        //         cout << "Text :" << out <<endl;
+        //     }
+        // }
     };
 
-    void processFile()
-    {
-        vector<string> listado = obtenerDirectorio();
-        for (int i = 0; i <listado.size(); i++)
-        {
-            countFiles++;
-            files.insert(make_pair(countFiles, listado.at(i)));
-            readFile(countFiles, listado.at(i));
-        }
-    };
-    ~Parse();
+	Parse(string pathDirectory)
+	{
+		this->pos = 0;
+        this->pathDocuments = pathDirectory;
+        this->t = new Tree();
+		initStopWords();
+	};
+
+	void processFile()
+	{
+
+		//outputFile.open("output.txt");
+		vector<string> listado = obtenerDirectorio();
+		for (int i = 0; i <listado.size(); i++)
+		{
+			countFiles++;
+			files.insert(make_pair(countFiles, listado.at(i)));
+			readFile(countFiles, listado.at(i));
+		}
+		//outputFile.close();
+	};
+
+	~Parse();
 };
 
