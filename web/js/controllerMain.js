@@ -92,7 +92,7 @@ function handlePosts(){
 function linkToContent(){
   /*get the tag a value :*/
     var linkName = document.getElementsByTagName("a").value;
-  console.log("value of link clicked"+linkName);
+   console.log("value of link clicked"+linkName);
   // alert("value of link clicked"+linkName);
   location.href='content.html';
 }
