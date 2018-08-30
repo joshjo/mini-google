@@ -19,12 +19,7 @@ struct Document {
     unsigned short int idFile;
     int start;
     int end;
-};
-
-struct DocIndex {
-    string content;
     string title;
-    int idDocument;
 };
 
 struct WordDoc {
