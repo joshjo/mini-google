@@ -40,19 +40,20 @@ char c(int p) {
     }
 }
 
-
 class Tree;
+
+class Parse;
 
 class Node {
 
-private:
+public:
     Node ** sons;
     Node * parent;
     bool isWord;
     string str;
-    string word;
 
 public:
+    unordered_map <int, unsigned short int> directory;
     Node() {
         this->str = "";
         this->sons = new Node * [ALPHABET_LENGTH];
@@ -61,9 +62,9 @@ public:
         for (int i = 0; i < ALPHABET_LENGTH; i += 1) {
             this->sons[i] = 0;
         }
-        // this->word = 0;
     }
-    Node(string & str, bool isWord = false) {
+
+    Node(int doc, string & str, bool isWord = false) {
         this->str = str;
         this->sons = new Node * [ALPHABET_LENGTH];
         this->isWord = isWord;
@@ -71,17 +72,7 @@ public:
         for (int i = 0; i < ALPHABET_LENGTH; i += 1) {
             this->sons[i] = 0;
         }
-        // this->word = '0';
-    }
-    Node(string & word, string & str, bool isWord = false) {
-        this->str = str;
-        this->word = word;
-        this->sons = new Node * [ALPHABET_LENGTH];
-        this->isWord = isWord;
-        this->parent = 0;
-        for (int i = 0; i < ALPHABET_LENGTH; i += 1) {
-            this->sons[i] = 0;
-        }
+        directory[doc] += 1;
     }
 
     string cut(size_t pos) {
@@ -117,6 +108,7 @@ public:
     }
 
     friend class Tree;
+    friend class Parse;
 };
 
 
