@@ -1,5 +1,6 @@
 #ifndef TREE_H
 #define TREE_H
+#include <algorithm>
 #include "node.h"
 
 class Coincidence {
@@ -33,6 +34,49 @@ public:
     void printSons() {
         // printSons(root->sons[p('H')]);
         printSons(root);
+    }
+
+    void getWords(Node * & node, vector<string> *dictionary){
+        if(node->isWord)
+            dictionary->push_back(node->str);
+
+        vector<string> *temp = new vector<string>();
+
+        for (int i = 0; i < ALPHABET_LENGTH; i++)
+            if (node->sons[i])
+                getWords(node->sons[i], temp);
+
+        for (int i = 0; i < temp->size(); i++) 
+            dictionary->push_back(node->str+(*temp)[i]);
+
+    }
+
+    void findOptions(string str, vector<string> *dictionary){
+        std::transform(str.begin(), str.end(),str.begin(), ::toupper);
+        size_t position = 0;
+        Node * node = root;
+        Node * next;
+        string prevStr = str;
+        size_t absPosition = 0;
+        while (node) {
+            node->contains(str, position);
+            absPosition += position;
+            str = str.substr(position);
+            next = node->sons[p(str[0])];
+            if (str.size() && next) {
+                node = next;
+            } else {
+                if(next){
+                    string initWord = prevStr.substr(0, absPosition-position);
+
+                    getWords(node, dictionary);
+                    for (int i = 0; i < dictionary->size(); i++) {
+                        (*dictionary)[i] = initWord + (*dictionary)[i];
+                    }
+                }
+                break;
+            }
+        }
     }
 
     bool find(string str, string & word) {

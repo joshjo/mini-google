@@ -1,10 +1,27 @@
 #include <iostream>
 
+#include <boost/property_tree/json_parser.hpp>
 #include "radix-tree/tree.h"
 #include "parse/Parse.h"
 
 using namespace std;
 
+vector<string>* findSimilarWords(Tree t, string word){
+    vector<string> *dictionary = new vector<string>;
+    t.findOptions(word, dictionary);
+    return dictionary;
+}
+
+string vectorToJson(vector<string> *list){
+    string json_string = "{[";
+    for(int i = 0; i < list->size(); i++){
+        json_string += "'"+(*list)[i]+"'";
+        if(i != list->size()-1)
+            json_string += ",";
+    }
+    json_string += "]}";
+    return json_string;
+}
 
 int main(int argc, char *argv[]) {
     Parse *parse = new Parse("../../files/");
@@ -39,6 +56,26 @@ int main(int argc, char *argv[]) {
     //     t.add(*it);
     // }
 
+    //while (true) {
+    //    string word;
+    //    cout << "Please enter a word ..." << endl;
+    //    cin >> word;
+    //    if (word == "exit") {
+    //        break;
+    //    }
+    //    string result;
+    //    bool found = t.find(word, result);
+    //    if (found) {
+    //        cout << ":) Found " << result << endl;
+    //        parse->someContent(result);
+    //    } else {
+    //        cout << ":( NOT Found";
+    //    }
+    //    cout << endl;
+    //}
+
+    
+
     while (true) {
         string word;
         cout << "Please enter a word ..." << endl;
@@ -47,14 +84,17 @@ int main(int argc, char *argv[]) {
             break;
         }
         string result;
-        bool found = t.find(word, result);
-        if (found) {
-            cout << ":) Found " << result << endl;
-            parse->someContent(result);
-        } else {
-            cout << ":( NOT Found";
-        }
+        //t.findOptions(word, &dictionary);
+        vector<string> *list = findSimilarWords(t, word);
+        
+        cout << endl;
+        for(int i = 0; i < list->size(); i++)
+            cout << (*list)[i] << endl;
+        cout << endl;
+        cout << vectorToJson(list) << endl;
+        delete list;
         cout << endl;
     }
+
     return 0;
 }

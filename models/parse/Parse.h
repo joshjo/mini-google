@@ -194,12 +194,12 @@ private:
 		// g1.push_back("test");
         // g1.push_back("spanishText_15000_20000");
 		g1.push_back("spanishText_15000_20000");
-		g1.push_back("spanishText_20000_25000");
-		g1.push_back("spanishText_25000_30000");
-		g1.push_back("spanishText_40000_45000");
-		g1.push_back("spanishText_45000_50000");
-		g1.push_back("spanishText_70000_75000");
-		g1.push_back("spanishText_90000_95000");
+		// g1.push_back("spanishText_20000_25000");
+		// g1.push_back("spanishText_25000_30000");
+		// g1.push_back("spanishText_40000_45000");
+		// g1.push_back("spanishText_45000_50000");
+		// g1.push_back("spanishText_70000_75000");
+		// g1.push_back("spanishText_90000_95000");
 		// g1.push_back("spanishText_110000_115000");
 		// g1.push_back("spanishText_120000_125000");
 		// g1.push_back("spanishText_180000_185000");
