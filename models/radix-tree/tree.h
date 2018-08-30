@@ -1,5 +1,8 @@
 #ifndef TREE_H
 #define TREE_H
+
+#define MAX_SIZE_OPTIONS 10
+
 #include <algorithm>
 #include "node.h"
 
@@ -37,18 +40,23 @@ public:
     }
 
     void getWords(Node * & node, vector<string> *dictionary){
-        if(node->isWord)
-            dictionary->push_back(node->str);
+        if(dictionary->size() < MAX_SIZE_OPTIONS){
 
-        vector<string> *temp = new vector<string>();
+            if(node->isWord)
+                dictionary->push_back(node->str);
 
-        for (int i = 0; i < ALPHABET_LENGTH; i++)
-            if (node->sons[i])
-                getWords(node->sons[i], temp);
+            vector<string> *temp = new vector<string>();
 
-        for (int i = 0; i < temp->size(); i++) 
-            dictionary->push_back(node->str+(*temp)[i]);
+            for (size_t i = 0; i < ALPHABET_LENGTH; i++)
+                if (node->sons[i])
+                    getWords(node->sons[i], temp);
 
+            int toFill = MAX_SIZE_OPTIONS - dictionary->size();
+            int realTemp = temp->size() > MAX_SIZE_OPTIONS ? toFill : (temp->size() > toFill ? toFill : temp->size());
+
+            for (size_t i = 0; i < realTemp; i++) 
+                dictionary->push_back(node->str+(*temp)[i]);
+        }
     }
 
     void findOptions(string str, vector<string> *dictionary){

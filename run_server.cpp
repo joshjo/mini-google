@@ -17,7 +17,6 @@
 #include <boost/filesystem.hpp>
 #include <fstream>
 #include <vector>
-#define MAX_SIZE 10
 #ifdef HAVE_OPENSSL
 #include "crypto.hpp"
 #endif
@@ -36,10 +35,9 @@ vector<string>* findSimilarWords(Tree* t, string word){
     return dictionary;
 }
 
-string vectorToJson(vector<string> *list, int maxSize){
-    string json_string = "{[";
-    if(list->size() < maxSize)
-        maxSize = list->size();
+string vectorToJson(vector<string> *list){
+    string json_string = "{'words':[";
+    int maxSize = list->size();
     
     for(int i = 0; i < maxSize; i++){
         json_string += "'"+(*list)[i]+"'";
@@ -85,7 +83,7 @@ int main() {
                 word = field.second;
 
             vector<string> *list = findSimilarWords(tree, word);
-            stream << vectorToJson(list, MAX_SIZE);
+            stream << vectorToJson(list);
 
             response->write_get(stream,header);
             delete list;

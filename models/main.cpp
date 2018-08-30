@@ -13,7 +13,7 @@ vector<string>* findSimilarWords(Tree t, string word){
 }
 
 string vectorToJson(vector<string> *list){
-    string json_string = "{[";
+    string json_string = "{'words':[";
     for(int i = 0; i < list->size(); i++){
         json_string += "'"+(*list)[i]+"'";
         if(i != list->size()-1)
