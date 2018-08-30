@@ -36,16 +36,23 @@ vector<string>* findSimilarWords(Tree* t, string word){
 }
 
 string vectorToJson(vector<string> *list){
-    string json_string = "{'words':[";
+    string json_string = "{\"words\":[";
     int maxSize = list->size();
     
     for(int i = 0; i < maxSize; i++){
-        json_string += "'"+(*list)[i]+"'";
+        json_string += "\""+(*list)[i]+"\"";
         if(i != maxSize-1)
             json_string += ",";
     }
     json_string += "]}";
     return json_string;
+}
+
+string getNearWord(Tree t, vector<vector<string>*> *dictionary, string find_word){
+    std::transform(find_word.begin(), find_word.end(),find_word.begin(), ::toupper);
+    if(find_word.length() < 2)
+        return "VACIO";
+    return t.processMostNear(dictionary, find_word);
 }
 
 int main() {
@@ -58,15 +65,18 @@ int main() {
         tree->add(it->first);
     }
 
+    vector<vector<string>*> *dictionary = new vector<vector<string>*>();
+    tree->loadData(dictionary, "../../files/differentWords.txt");
+
     HttpServer server;
     server.config.port = 8090;
 
 
-    server.resource["^/altavista$"]["GET"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+    server.resource["^/altavista$"]["GET"] = [tree, dictionary](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
         stringstream stream;
         SimpleWeb::CaseInsensitiveMultimap header;
-        //stream << tree->get_json_string();
-        stream << "test";
+        string near = getNearWord(*tree, dictionary, "cxcx");
+        stream << near;
         response->write_get(stream,header);
 
     };
