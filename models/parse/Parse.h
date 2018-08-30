@@ -24,13 +24,15 @@ private:
     size_t pos;
     string word;
     map<string *, WordDoc *> pagerank;
-    Tree * t;
+   // Tree * t;
 	set<string> stopWords;
 
 	//Variables constantes
 	const string startDoc= "<doc";
 	const string endDoc = "</doc>";
 	const string delimiterId = "id";
+	const string delimiterTitle = "title";
+	const string delimiterEndDoc = "ENDOFARTICLE";
 
 	//ofstream outputFile;
 
@@ -87,19 +89,20 @@ private:
 	};
 
 
-	int getInformation(string delimiter, string line)
+	string getInformation(string delimiter, string line)
 	{
 		size_t pos = line.find(delimiter) + delimiter.length() + 2;
 		line.erase(0, pos);
 		pos = line.find("\"");
-		return stoi(line.substr(0, pos));
+		return line.substr(0, pos);
 	};
 
 	void readFile(int idFile, string nameFile)
 	{
         int start, idDocument;
 		ifstream inputFile;
-		inputFile.open(pathDocuments + nameFile);
+		//inputFile.open(pathDocuments + nameFile);
+		inputFile.open("spanishText1000015000");
 		if (inputFile)
 		{
 			//outputFile  << pathDocuments << nameFile << endl;
@@ -117,20 +120,21 @@ private:
 				{
 					//Init Document
 					tempDoc = new Document();
-					idDocument = getInformation(delimiterId, line);
+					idDocument = stoi(getInformation(delimiterId, line));
+					tempDoc->title = getInformation(delimiterTitle, line);
                     tempDoc->idDocument = idDocument;
-					tempDoc->start = start;
+					tempDoc->start = start + line.length(); // +1
 					tempDoc->idFile = idFile;
-					// cout << "Leyendo documento " << tempDoc->idDocument;
+					cout << "Titulo"<< tempDoc->title << endl;
+					cout << "Inicio doc "<< tempDoc->start << endl;
 
 				}
 				else if (line.find(endDoc) != string::npos)
 				{
 					//Add document
-					tempDoc->end = inputFile.tellg();
+					tempDoc->end = start - delimiterEndDoc.length() - 1; //-1 
 					documents.insert(make_pair(tempDoc->idDocument, tempDoc));
-					// cout << " Fin de lectura" << tempDoc->idDocument << endl;
-
+					cout << "- "<< tempDoc->end << endl;
 				}
 				else
 				{
@@ -152,7 +156,7 @@ private:
 							objWord->start = (pos > 0)? pos - temp.length() + start: start;
 							*/
                             // cout << temp << endl;
-                            t->add(temp, idDocument, start);
+                           // t->add(temp, idDocument, start);
 						}
 					}
 				}
@@ -168,7 +172,7 @@ private:
 	{
 		vector<string> g1;
 		//g1.push_back("prueba");
-		// g1.push_back("spanishText_10000_15000");
+		 g1.push_back("spanishText1000015000");
   //       g1.push_back("spanishText_15000_20000");
 		// g1.push_back("spanishText_20000_25000");
 		// g1.push_back("spanishText_25000_30000");
@@ -224,8 +228,8 @@ private:
 		// g1.push_back("spanishText_460000_465000");
 		// g1.push_back("spanishText_465000_470000");
 		// g1.push_back("spanishText_470000_475000");
-		g1.push_back("spanishText_475000_480000");
-		g1.push_back("spanishText_480000_485000");
+		//g1.push_back("spanishText_475000_480000");
+		//g1.push_back("spanishText_480000_485000");
 		return g1;
 	};
 
@@ -245,8 +249,8 @@ public:
         int size = words.size();
 
         for (auto it = words.begin(); it != words.end(); it++) {
-            Node * node;
-            bool found = t->find(*it, node);
+          //  Node * node;
+           /* bool found = t->find(*it, node);
             // cout << "word: " << (*it) << endl;
             if (found) {
                 for (auto it = node->directory.begin(); it != node->directory.end(); it++) {
@@ -256,7 +260,7 @@ public:
                     pageranks[idDocument] += it->second.pagerank;
                     positions[idDocument].push_back(it->second.start);
                 }
-            }
+            }*/
         }
 
         for (auto it = directories.begin(); it != directories.end(); it++) {
@@ -311,9 +315,9 @@ public:
 
     };
 
-    DocIndex getDocument(int idDocument) {
+    Document getDocument(int idDocument) {
         Document * doc = documents[idDocument];
-        string s;
+        /*string s;
         ifstream inputFile;
         inputFile.open(pathDocuments + fileName);
         int start = doc->start;
@@ -322,8 +326,8 @@ public:
         s.resize(end - start);
         inputFile.read(&s[0], end - start);
 
-
-        return s;
+		*/
+        return *doc;
     }
 
 
@@ -375,7 +379,7 @@ public:
 	{
 		this->pos = 0;
         this->pathDocuments = pathDirectory;
-        this->t = new Tree();
+        //this->t = new Tree();
 		initStopWords();
 	};
 
