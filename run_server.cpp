@@ -38,7 +38,7 @@ vector<string>* findSimilarWords(Tree* t, string word){
 string vectorToJson(vector<string> *list){
     string json_string = "{\"words\":[";
     int maxSize = list->size();
-    
+
     for(int i = 0; i < maxSize; i++){
         json_string += "\""+(*list)[i]+"\"";
         if(i != maxSize-1)
@@ -80,7 +80,7 @@ int main() {
         auto q_it = q_range.first;
         auto start_range = query_fields.equal_range("start");
         auto start_it = start_range.first;
-        unsigned int start = stoi( start_it->second);
+        int start = stoi( start_it->second);
 
         stream << parse->find(q_it->second, start);
         response->write_get(stream,header);
