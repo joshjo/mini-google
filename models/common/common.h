@@ -54,11 +54,10 @@ struct Word {
 string escape_json(const string &s) {
     ostringstream o;
     for (auto c = s.cbegin(); c != s.cend(); c++) {
-        if (*c == '"' || *c == '\\' || ('\x00' <= *c && *c <= '\x1f')) {
-            o << "\\u"
-              << hex << setw(4) << setfill('0') << (int)*c;
-        } else if(int(*c) == 10) {
+        if (*c == '\n') {
             o << " ";
+        } else if (*c == '"' || *c == '\\' || ('\x00' <= *c && *c <= '\x1f')) {
+            o << "\\u" << hex << setw(4) << setfill('0') << (int)*c;
         } else {
             o << *c;
         }
