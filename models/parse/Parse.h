@@ -175,7 +175,7 @@ private:
 		vector<string> g1;
 		//g1.push_back("prueba");
 		//  g1.push_back("spanishText_10000_15000");
-        // g1.push_back("spanishText_15000_20000");
+         g1.push_back("spanishText_15000_20000");
 		// g1.push_back("spanishText_20000_25000");
 		// g1.push_back("spanishText_25000_30000");
 		// g1.push_back("spanishText_40000_45000");
@@ -230,8 +230,8 @@ private:
 		// g1.push_back("spanishText_460000_465000");
 		// g1.push_back("spanishText_465000_470000");
 		// g1.push_back("spanishText_470000_475000");
-		g1.push_back("spanishText_475000_480000");
-		g1.push_back("spanishText_480000_485000");
+		//g1.push_back("spanishText_475000_480000");
+		//g1.push_back("spanishText_480000_485000");
 		return g1;
 	};
 

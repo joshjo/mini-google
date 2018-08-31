@@ -15,7 +15,7 @@ var message = "\
             {2}\
         </div>\
         <div class='PostFooter'>\
-        id='{0}' dbindex='{3}'\
+        id={0}\
     </div>";
     var messag = "${title}";
 var title = "First Post";
@@ -72,6 +72,7 @@ http.onreadystatechange = function() {
         //alert(http.responseText);
         json_ans = JSON.parse(http.responseText);
         // if(json_ans["status"] == "200"){
+        console.log(json_ans);
         if(true) {
             //fill and update time and count result
             document.getElementById("time").innerHTML = json_ans["time"];
@@ -91,11 +92,12 @@ http.onreadystatechange = function() {
             var div_result = document.getElementById("result");
 
             for (var i=0; i< json_ans["results"].length; i++){
+                var temp = json_ans["results"][i];
                 var node = document.createElement("div");
-                var id = json_ans["docid"];
+                var id = temp["docid"];
                 var dbIndex = 12;
-                var title = "test";
-                var preview = json_ans["preview"];
+                var title = temp["title"];
+                var preview = temp["preview"];
                 //node.innerHTML = message.format(id, title, findWord(body, word), dbIndex);
                 node.innerHTML = message.format(id, title, preview, dbIndex);
                 node.setAttribute("class","PostResult");
