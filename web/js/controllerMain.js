@@ -10,12 +10,12 @@ window.onload = function() {
 
 
 var message = "\
-    <a href='/getDocument/../{0}/../content.html'>{1}</a>\
+    <a href='{0}/../content.html?id={1}'>{2}</a>\
         <div class='PostBody'>\
-            {2}\
+            {3}\
         </div>\
         <div class='PostFooter'>\
-        id={0}\
+        id={1}\
     </div>";
     var messag = "${title}";
 var title = "First Post";
@@ -99,7 +99,7 @@ http.onreadystatechange = function() {
                 var title = temp["title"];
                 var preview = temp["preview"];
                 //node.innerHTML = message.format(id, title, findWord(body, word), dbIndex);
-                node.innerHTML = message.format(id, title, preview, dbIndex);
+                node.innerHTML = message.format(window.location.href.split("?")[0], id, title, preview, dbIndex);
                 node.setAttribute("class","PostResult");
                 div_result.appendChild(node);
             }
