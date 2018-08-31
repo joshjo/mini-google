@@ -57,32 +57,37 @@ string getNearWord(Tree t, vector<vector<string>*> *dictionary, string find_word
 
 int main() {
 
-    Tree *tree = new Tree();
-    Parse *parse = new Parse("../../files/");
+    // Tree *tree = new Tree();
+    Parse * parse = new Parse("../../files/");
     parse->processFile();
-    
-    for(multimap<string, Word *>::iterator it = parse->words.begin(), end = parse->words.end(); it != end; it = parse->words.upper_bound(it->first)) {
-        tree->add(it->first);
-    }
+
+    // for(multimap<string, Word *>::iterator it = parse->words.begin(), end = parse->words.end(); it != end; it = parse->words.upper_bound(it->first)) {
+    //     tree->add(it->first);
+    // }
 
     vector<vector<string>*> *dictionary = new vector<vector<string>*>();
-    tree->loadData(dictionary, "../../files/differentWords.txt");
+    // tree->loadData(dictionary, "../../files/differentWords.txt");
 
     HttpServer server;
     server.config.port = 8090;
 
-
-    server.resource["^/altavista$"]["GET"] = [tree, dictionary](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+    server.resource["^/search$"]["GET"] = [parse](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
         stringstream stream;
         SimpleWeb::CaseInsensitiveMultimap header;
-        string near = getNearWord(*tree, dictionary, "cxcx");
-        stream << near;
-        response->write_get(stream,header);
+        //stream << tree->get_json_string();
+        auto query_fields = request->parse_query_string();
+        auto q_range = query_fields.equal_range("q");
+        auto q_it = q_range.first;
+        auto start_range = query_fields.equal_range("start");
+        auto start_it = start_range.first;
+        unsigned int start = stoi( start_it->second);
 
+        stream << parse->find(q_it->second, start);
+        response->write_get(stream,header);
     };
-    
-    /* http://localhost:8090/altavista/getOptions?word=test */
-    server.resource["^/altavista/getOptions$"]["GET"] = [tree](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+
+        /* http://localhost:8090/altavista/getOptions?word=test */
+    server.resource["^/altavista/getOptions$"]["GET"] = [parse](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
         stringstream stream;
         SimpleWeb::CaseInsensitiveMultimap header;
 
@@ -92,7 +97,7 @@ int main() {
             for(auto &field : query_fields)
                 word = field.second;
 
-            vector<string> *list = findSimilarWords(tree, word);
+            vector<string> *list = findSimilarWords(parse->t, word);
             stream << vectorToJson(list);
 
             response->write_get(stream,header);
