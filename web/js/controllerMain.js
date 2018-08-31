@@ -126,8 +126,9 @@ http.onreadystatechange = function() {
 http.send(params);
 
 function handleClick(event){
+
     var http = new XMLHttpRequest();
-    var url = 'https://httpbin.org/get';
+    var url = ' http://localhost:8090/altavista/getOptions?word=wilder ';
     var params = 'orem=ipsum&name=binny';
     http.open('GET', url, true);
 
@@ -135,7 +136,10 @@ function handleClick(event){
 
     http.onreadystatechange = function() {
         if(http.readyState == 4 && http.status == 200) {
+            
+            console.log(http.responseText);
             alert(http.responseText);
+
         }
     }
     http.send(params);
