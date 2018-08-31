@@ -52,7 +52,7 @@ function getParameterByName(name) {
 /* Find search */
 
 var http = new XMLHttpRequest();
-var url = 'http://localhost:8090/altavista/search?q={0}&start={1}';
+var url = 'http://localhost:8090/search?q={0}&start={1}';
 var params = 'orem=ipsum&name=binny';
 
 /* variables */
@@ -71,7 +71,8 @@ http.onreadystatechange = function() {
     if(http.readyState == 4 && http.status == 200) {
         //alert(http.responseText);
         json_ans = JSON.parse(http.responseText);
-        if(json_ans["status"] == "200"){
+        // if(json_ans["status"] == "200"){
+        if(true) {
             //fill and update time and count result
             document.getElementById("time").innerHTML = json_ans["time"];
             document.getElementById("count").innerHTML = json_ans["total"];
