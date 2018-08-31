@@ -205,3 +205,20 @@ function linkToContent(){
   // alert("value of link clicked"+linkName);
   location.href='content.html';
 }
+
+
+
+/* display */
+
+function querySearchKey(e){
+    tecla = (document.all) ? e.keyCode : e.which;
+    if (tecla==13){ 
+      querySearch();
+    }
+}
+
+function querySearch(){
+    var value = document.getElementById("search").value;
+    var current_url = window.location.href.split("?")[0];
+    location.href = current_url+"?q=" + value + "&start=0";
+}

@@ -10,13 +10,13 @@
 
         <div class="PostSearch">
             <div class="PostImg">
-                <a><img src="img/altavista.png" class="logo-main" alt="Altavista" ></a>
+                <a href="index.html"><img src="img/altavista.png" class="logo-main" alt="Altavista" ></a>
             </div>
             <div class="PostForm">
                 <!--form method="GET" onSubmit="handlePosts()" action="/getPosts" class="PostForm"-->
                     <!-- <input type="text"   id="search" class="box-input" name="search" placeholder="Search"> -->
                     <div id="autocompleteDiv" class="autocomplete PostForm" >
-                        <input id="search" class="box-input" name="search" placeholder="Search">
+                        <input id="search" class="box-input" name="search" placeholder="Search" onkeydown="querySearchKey(event)">
                     </div>
 
                     <input type="button" onclick="handlePosts()" class="btn btn--search" value="Search"/>
@@ -43,7 +43,7 @@
         </div>
         <!-- JavaScript -->
         <script src="js/controllerMain.js"></script>
-        <script src="js/controllerIndex.js"></script>
+        <!--script src="js/controllerIndex.js"></script-->
     </body>
     <footer>
         <button id="prevButton" onclick="prevPage()">Prev</button>

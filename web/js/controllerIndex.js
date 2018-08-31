@@ -133,13 +133,21 @@ var dataSuggest = ["poco","pocoyo","pocoyó","pocophone f1","pocoyo en español"
 
 autocomplete(document.getElementById("myInput"),dataSuggest);
 
-
+function querySearchKey(e){
+    tecla = (document.all) ? e.keyCode : e.which;
+    if (tecla==13){ 
+      querySearch();
+    }
+}
 //consulta get data string buscado
 function querySearch(){
   var value = document.getElementById("myInput").value;
   console.log("data "+value);
   //autoResponse(value);
-  autoResponse(value);
+  //autoResponse(value);
+
+  var current_url = window.location.href.split("?")[0]+"/../main.html";
+  location.href = current_url+"?q=" + value + "&start=0";
 /*
   var http = new XMLHttpRequest();
   var url = 'http://localhost:8090/altavista/getOptions?word='+ value;
@@ -157,8 +165,8 @@ function querySearch(){
     http.send(params);
 */
 
-  window.localStorage.setItem("searchValue", value); //guardar el valor en el localStorage
-  location.href='main.html';
+  //window.localStorage.setItem("searchValue", value); //guardar el valor en el localStorage
+  //location.href='main.html';
 }
 
 
@@ -182,11 +190,8 @@ function autoResponse(val, dataSuggest){
             // refreshArray(JSON.parse(http.responseText));
             //
 
-            console.log(JSON.parse(http.responseText));
-            var arr = [];
-            for( var i = 0; i < 10; i++ ){
-              arr[i] = JSON.parse(http.responseText)["words"][i];
-            }
+            //console.log(JSON.parse(http.responseText));
+            var arr = JSON.parse(http.responseText)["words"];
 
             /*crear un elemento DIV que contendra los items con valores:*/
             a = document.createElement("DIV");

@@ -14,13 +14,13 @@
        <br>
        <!-- autocompletado en div y un text field -->
        <div id="autocompleteDiv" class="autocomplete center " style="width:40%;">
-         <input id="myInput" type="text" name="myCountry" placeholder="Buscar en Mini altavista" >
+         <input id="myInput" type="text" name="myCountry" placeholder="Search" onkeydown="querySearchKey(event)">
        </div>
        <br>
        <br>
        <button type="button" onclick="querySearch()" aria-label="Google Search" class="center button" name="btnK" type="submit"> Search</button>
     </div>
-  
+
     <!--
     <div class="minigoogle">
   		<p>Inspired by <a href="github/minigoogle" target="_blank"> minigoogle</a>.</p>
