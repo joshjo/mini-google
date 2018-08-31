@@ -21,14 +21,28 @@ function autocomplete(inp, arr) {
   /*ejecuta una funcion cuando alguien escribe en el textfield:*/
   inp.addEventListener("input", function(e) {
 
-      var a, b, i, val = this.value;
+      var a, b, i, val = this.value.trim();
       // console.log(" va------> "+document.getElementById("myInput").value);
 
       /*cierra cualquier lista ya abierta de valores autocompletados:*/
       closeAllLists();
       //falta validar los espacios en blanco
       if (!val || val === " ") { return false;}
-      autoResponse(val);
+      var prefix = "";
+      var arrVal = val.split(" ");
+      if(arrVal.length > 1){
+        var i=0;
+        for(; i < arrVal.length-1; i++){ 
+            if(arrVal[i] != "")
+                prefix += arrVal[i]+" ";
+            else
+                prefix += arrVal[i];
+        }
+        val = arrVal[i];
+      }
+      this.value = prefix + val;
+      autoResponse(prefix, val);
+
   });
   function closeAllLists(elmnt) {
     /*cierra todo la lista autocomplete en el documento,
@@ -49,7 +63,7 @@ function autocomplete(inp, arr) {
 
 /* funcion para obtener respuesta del servidor para
  * cada caracter buscado y palabra buscada :*/
-function autoResponse(val){
+function autoResponse(prefix, val){
 
     var http = new XMLHttpRequest();
     var url = 'http://localhost:8090/altavista/getOptions?word='+ encodeURIComponent(val);
@@ -83,11 +97,11 @@ function autoResponse(val){
 
                 /*hacer en negrita las letras coencidentes:*/
 
-                b.innerHTML = arr[i].substr(0,val.length).toLowerCase();
+                b.innerHTML = prefix + arr[i].substr(0,val.length).toLowerCase();
                 b.innerHTML += "<strong>"+arr[i].substr(val.length).toLowerCase()+"</strong>";
 
                 /*insertar un inputfield(hidden)  que contendra los valores del item actual:*/
-                b.innerHTML += "<input  type='hidden' value='" + arr[i]+ "'>";
+                b.innerHTML += "<input  type='hidden' value='" +prefix+ arr[i]+ "'>";
 
                 /*ejecutar una funcion cuando aiguien hace click en el item value(DIV):*/
                 b.addEventListener("click", function(e) {
@@ -137,18 +151,6 @@ var message = "\
         <div class='PostFooter'>\
         id={1}\
     </div>";
-    var messag = "${title}";
-var title = "First Post";
-var id = "26232";
-var dbIndex = "12235";
-var word = "ex";
-var maxLetters = 50;
-var body = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor \
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud \
-exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute \
-irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla \
-pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia \
-deserunt mollit anim id est laborum.";
 
 String.prototype.format = function() {
     var formatted = this;
@@ -301,7 +303,14 @@ function handlePosts(){
     //    document.createTextNode ('<input type="button" name="boton7" value=" 7 ">');
     //    elements.appendChild(UnBoton);
     //}
-    q_parameter = document.getElementById("search").value;
+
+    q_parameter = document.getElementById("search").value.trim();
+
+    if(q_parameter == ""){
+        document.getElementById("search").value = "";
+        return;
+    }
+
     var current_url = window.location.href.split("?")[0];
     location.href = current_url+"?q=" + q_parameter + "&start=0";
 

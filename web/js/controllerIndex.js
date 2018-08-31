@@ -15,7 +15,20 @@ function autocomplete(inp, arr) {
       closeAllLists();
       //falta validar los espacios en blanco
       if (!val || val === " ") { return false;}
-      autoResponse(val);
+      var prefix = "";
+      var arrVal = val.split(" ");
+      if(arrVal.length > 1){
+        var i=0;
+        for(; i < arrVal.length-1; i++){ 
+          if(arrVal[i] != "")
+              prefix += arrVal[i]+" ";
+          else
+              prefix += arrVal[i];
+      }
+        val = arrVal[i];
+      }
+      this.value = prefix + val;
+      autoResponse(prefix, val);
   });
 
   /*ejecuta una funcion presionando una tecla del teclado:*/
@@ -139,10 +152,11 @@ function querySearchKey(e){
 }
 //consulta get data string buscado
 function querySearch(){
-  var value = document.getElementById("myInput").value;
-  console.log("data "+value);
-  //autoResponse(value);
-  //autoResponse(value);
+  var value = document.getElementById("myInput").value.trim();
+  if(value == ""){
+    document.getElementById("myInput").value = "";
+    return;
+}
 
   var current_url = window.location.href.split("?")[0]+"/../main.html";
   location.href = current_url+"?q=" + value + "&start=0";
@@ -170,7 +184,7 @@ function querySearch(){
 
 /* funcion para obtener respuesta del servidor para
  * cada caracter buscado y palabra buscada :*/
-function autoResponse(val, dataSuggest){
+function autoResponse(prefix, val){
 
     var http = new XMLHttpRequest();
     var url = 'http://localhost:8090/altavista/getOptions?word='+ encodeURIComponent(val);
@@ -204,11 +218,11 @@ function autoResponse(val, dataSuggest){
 
                 /*hacer en negrita las letras coencidentes:*/
 
-                b.innerHTML = tildes_unicode(arr[i]).substr(0,val.length).toLowerCase();
+                b.innerHTML = prefix+tildes_unicode(arr[i]).substr(0,val.length).toLowerCase();
                 b.innerHTML += "<strong>"+tildes_unicode(arr[i]).substr(val.length).toLowerCase()+"</strong>";
 
                 /*insertar un inputfield(hidden)  que contendra los valores del item actual:*/
-                b.innerHTML += "<input  type='hidden' value='" + arr[i]+ "'>";
+                b.innerHTML += "<input  type='hidden' value='" + prefix+arr[i]+ "'>";
 
                 /*ejecutar una funcion cuando aiguien hace click en el item value(DIV):*/
                 b.addEventListener("click", function(e) {
@@ -219,15 +233,18 @@ function autoResponse(val, dataSuggest){
                       var innerObj = e.target.innerHTML
                       var index = innerObj.indexOf("value=");
                       var objValue = "";
+                      
                       if(index>0){
-                              index+=7;
-                          var tempStr = innerObj.substring(index,innerObj.lenght);
-                          var tempIndex = tempStr.indexOf("\"");
-                          tempIndex+=index;
-                          objValue = innerObj.substring(index,tempIndex);
+                        index+=7;
+                        var tempStr = innerObj.substring(index,innerObj.lenght);
+                        var tempIndex = tempStr.indexOf("\"");
+                        tempIndex+=index;
+                        objValue = innerObj.substring(index,tempIndex);
                         console.log(objValue);
-                          }
-
+                      }
+                          alert(objValue);
+                          alert(index);
+                          console.log(e);
 //                        document.getElementById("myInput").value = document.getElementsByTagName("input")[0].value;
                     document.getElementById("myInput").value= objValue.toLowerCase();
 

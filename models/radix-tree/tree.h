@@ -6,6 +6,7 @@
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 #include <algorithm>
+#include <climits>
 #include "node.h"
 
 

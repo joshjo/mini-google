@@ -188,7 +188,7 @@ private:
 	{
 		vector<string> g1;
 		//g1.push_back("prueba");
-		g1.push_back("spanishText1000015000");
+		g1.push_back("spanishText_10000_15000");
         //g1.push_back("spanishText_15000_20000");
 		// g1.push_back("spanishText_20000_25000");
 		// g1.push_back("spanishText_25000_30000");
