@@ -29,9 +29,11 @@ irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nul
 pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia \
 deserunt mollit anim id est laborum.";
 
+
 function handleClick(event){
+
     var http = new XMLHttpRequest();
-    var url = 'https://httpbin.org/get';
+    var url = ' http://localhost:8090/altavista/getOptions?word=wilder ';
     var params = 'orem=ipsum&name=binny';
     http.open('GET', url, true);
 
@@ -39,11 +41,15 @@ function handleClick(event){
 
     http.onreadystatechange = function() {
         if(http.readyState == 4 && http.status == 200) {
+            
+            console.log(http.responseText);
             alert(http.responseText);
+
         }
     }
     http.send(params);
 }
+
 
 String.prototype.format = function() {
     var formatted = this;
