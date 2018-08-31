@@ -16,6 +16,12 @@
 
 using namespace std;
 
+struct Result {
+    string docId;
+    string title;
+    string preview;
+};
+
 struct Document {
     int idDocument;
     unsigned short int idFile;

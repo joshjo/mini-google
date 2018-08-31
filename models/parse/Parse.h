@@ -140,7 +140,7 @@ private:
 					string word, temp;
 					istringstream readLine(line);
 					int iniLine = (int)inputFile.tellg() - line.length() - 1;
-					int startchar = 0;					
+					int startchar = 0;
 					int countChar = iniLine;
 					set<string>::iterator a;
 					for(int i = 0 ; i <line.length(); i++)
@@ -161,7 +161,7 @@ private:
 						else
 						{
 							word += line.at(i);
-							
+
 						}
 					}
 					if(word.length() > 0)
@@ -188,7 +188,7 @@ private:
 	{
 		vector<string> g1;
 		//g1.push_back("prueba");
-		g1.push_back("spanishText_10000_15000");
+		// g1.push_back("spanishText_10000_15000");
         //g1.push_back("spanishText_15000_20000");
 		// g1.push_back("spanishText_20000_25000");
 		// g1.push_back("spanishText_25000_30000");
@@ -245,12 +245,59 @@ private:
 		// g1.push_back("spanishText_465000_470000");
 		// g1.push_back("spanishText_470000_475000");
 		//g1.push_back("spanishText_475000_480000");
-		//g1.push_back("spanishText_480000_485000");
+		g1.push_back("spanishText_480000_485000");
 		return g1;
 	};
 
 public:
-    string find(string word, int start = 0) {
+    string findJson(string word, int start = 0){
+        string jsonResults = "[ ";
+        int prev, next, total;
+        double time;
+        vector <Result> results;
+        find(word, results, total, next, prev, time, start);
+        int resultsSize = results.size();
+        string response;
+        // for (int i = start; i < start + pageSize && i < resultsSize; i++) {
+        //     pair <unsigned short int, int> * it = &(results[i]);
+        //     jsonResults += " {\"docid\": " + to_string(it->second) + ",";
+        //     jsonResults += "\"title\": \"" + documents[it->second]->title + "\",";
+        //     auto range = positions.equal_range(it->second);
+        //     vector<int> pos = range.first->second;
+        //     if (pos.size()) {
+        //         jsonResults += "\"preview\": \"" + getText(it->second, pos[0], pos[0] + 200, "...") + "\"";
+        //     } else {
+        //         jsonResults.pop_back();
+        //     }
+        //     jsonResults += "},";
+        // }
+
+        // // int prev = (start - pageSize) >= 0 ? (start - pageSize) : -1;
+        // // int next = (start + pageSize < resultsSize) ? (start + pageSize) : -1;
+
+        // jsonResults.pop_back();
+        // jsonResults += "]";
+        // response += "\"results\": " + jsonResults + ",";
+        // response += "\"prev\": " + to_string(prev) + ",";
+        // response += "\"next\": " + to_string(next) + ",";
+        // response += "\"total\": " + to_string(result.size()) + ",";
+        // // response += "\"previous\": " + ((start - pageSize) < 0) ? "-1" : to_string(start - pageSize) + ",";
+
+        // response += "\"time\": " + to_string(end);
+        // response += "}";
+
+        return response;
+    }
+
+    bool find(
+            string word,
+            vector <Result> & results,
+            int & total,
+            int & next,
+            int & prev,
+            double & time,
+            int start = 0
+        ) {
         vector<string> words;
         string response = "{ ";
         boost::split(words, word, boost::is_any_of(" "));
@@ -287,48 +334,34 @@ public:
                 intersections[idDocument] += pageranks[idDocument];
             }
         }
-        double end = (double)(clock() - tStart) / CLOCKS_PER_SEC;
+        time = (double)(clock() - tStart) / CLOCKS_PER_SEC;
 
-        vector <pair <unsigned short int, int> > result;
+        vector <pair <unsigned short int, int> > preResults;
 
         for (auto it = intersections.begin(); it != intersections.end(); it++) {
-            result.push_back(*new pair<unsigned short int, int> (it->second, it->first));
+            preResults.push_back(
+                *new pair<unsigned short int, int> (it->second, it->first));
         }
 
-        sort(result.begin(), result.end(), cmp());
+        total = preResults.size();
+        prev = (start - pageSize) >= 0 ? (start - pageSize) : -1;
+        next = (start + pageSize < total) ? (start + pageSize) : -1;
+        sort(preResults.begin(), preResults.end(), cmp());
 
-        string results = "[ ";
-        auto it = result.begin();
-        int resultsSize = result.size();
-        for (int i = start; i < start + pageSize && i < resultsSize; i++) {
-            pair <unsigned short int, int> * it = &(result[i]);
-            results += " {\"docid\": " + to_string(it->second) + ",";
-            results += "\"title\": \"" + documents[it->second]->title + "\",";
+        for (int i = start; i < start + pageSize && i < total; i++) {
+            pair <unsigned short int, int> * it = &(preResults[i]);
+            Result r;
+            r.docId = to_string(it->second);
+            r.title = documents[it->second]->title;
             auto range = positions.equal_range(it->second);
             vector<int> pos = range.first->second;
             if (pos.size()) {
-                results += "\"preview\": \"" + getText(it->second, pos[0], pos[0] + 20) + "\"";
-            } else {
-                results.pop_back();
+                r.preview = getText(it->second, pos[0], pos[0] + 200, "...");
             }
-            results += "},";
+            results.push_back(r);
         }
 
-        int prev = (start - pageSize) >= 0 ? (start - pageSize) : -1;
-        int next = (start + pageSize < resultsSize) ? (start + pageSize) : -1;
-
-        results.pop_back();
-        results += "]";
-        response += "\"results\": " + results + ",";
-        response += "\"prev\": " + to_string(prev) + ",";
-        response += "\"next\": " + to_string(next) + ",";
-        response += "\"total\": " + to_string(result.size()) + ",";
-        // response += "\"previous\": " + ((start - pageSize) < 0) ? "-1" : to_string(start - pageSize) + ",";
-
-        response += "\"time\": " + to_string(end);
-        response += "}";
-
-        return response;
+        return results.size() > 0;
     };
 
     // string findSimilarWords(string word) {
@@ -343,7 +376,11 @@ public:
         return response;
     }
 
-    string getText(int idDocument, int start, int end)
+    Document * getDocument(int idDocument) {
+        return documents[idDocument];
+    }
+
+    string getText(int idDocument, int start, int end, string endText = "")
     {
         ifstream ifs;
         Document * doc = documents[idDocument];
@@ -361,7 +398,7 @@ public:
             inputFile.read(&s[0], end - start);
         }
 
-        return escape_json(s);
+        return escape_json(s + endText);
     };
 
 	Parse(string pathDirectory)

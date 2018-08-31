@@ -30,92 +30,110 @@ string getNearWord(Tree t, vector<vector<string>*> *dictionary, string find_word
     return t.processMostNear(dictionary, find_word);
 }
 
+void mainMenu() {
+    cout << "  Type one of the following options " << endl;
+    cout << "  1. Make a search " << endl;
+    cout << "  2. Show a document " << endl;
+    cout << "  0. Exit " << endl;
+}
+
+void searchMenu(int next, int prev) {
+    cout << "=> Type one of the following options " << endl;
+    if (next > 0) {
+        cout << "1. Next page " << endl;
+    }
+    if (prev > 0) {
+        cout << "2. Prev page " << endl;
+    }
+    cout << "0. Back " << endl;
+}
+
 int main(int argc, char *argv[]) {
-    // unordered_multimap <string, int> words;
-    // words.insert(make_pair("hola", 1));
-    // words.insert(make_pair("hola", 2));
 
-    // // auto it = words.equal_range("hola");
-    // // it.first;
-    // // cout << << endl;
-
-    // for (auto it = words.begin(); it != words.end(); it++) {
-
-    // }
-
-    // for (auto it = words.begin(); it != words.end(); it = words.equal_range(it->first).first) {
-    //     cout << it->first << endl;
-    // }
-
-    // auto it = words.upper_bound("hola");
-
-    // cout << (--it)->second << endl;
-
-
-
-    // words["HOLA"] = 1;
-    // auto it = words.find("HOLA");
-    // if (it != words.end()) {
-    //     cout << it->second << endl;
-    // } else {
-    //     cout << "NOT" << endl;
-    // }
     Parse *parse = new Parse("../../files/");
     parse->processFile();
+    int prev, next, total;
+    double time;
 
-
-    // for(unordered_multimap<string, WordDoc *>::iterator it = parse->words.begin(), end = parse->words.end(); it != end; it = parse->words.upper_bound(it->first)) {
-    //     t.add(it->first);
-    // }
-
-    // vector<vector<string>*> *dictionary = new vector<vector<string>*>();
-    // t.loadData(dictionary, "../../files/differentWords.txt");
-    // cout << "Loaded " << dictionary->size() << endl;
-    // for(int i = 0; i < list.size(); i++)
-    // {
-
-    //     int start = list.at(i).start;
-    //     int end = list.at(i).end;
-    //     file.seekg(start);
-    //     std::string s;
-    //     s.resize(end - start);
-    //     file.read(&s[0], end - start);
-    //     cout << "IdFile: " << list.at(i).idFile << " Content: " << list.at(i).content;
-    //     cout << " Pos: " << list.at(i).start << " - "  << list.at(i).end << endl;
-    //     cout << "s: " << "|" << s << "|" << endl;
-    // }
-    // vector<string> g1;
-    // // g1.push_back("../../files/spanishText_10000_15000");
-    // g1.push_back("../../files/test");
-
-
-
-    // for (auto it = words.begin(); it != words.end(); ++it) {
-    //     t.add(*it);
-    // }
-
-    // parse->find("JOSUE JOEL");
+    cout << "====================================" << endl;
+    cout << "   (⌐■_■)  ** ALTAVISTA ** (⌐■_■)" << endl;
+    cout << "====================================" << endl;
 
     while (true) {
+        string option;
         string word;
-        cout << "Please enter a word ..." << endl;
-        getline(cin, word);
-        if (word == "exit") {
+        mainMenu();
+        cout << endl << "Option >> ";
+        getline(cin, option);
+        if (option == "1") {
+            string suboption;
+            prev = 0;
+            next = 0;
+            total = 0;
+            time = 0;
+            int start = 0;
+            bool firstTime = true;
+            while(true) {
+                if (firstTime) {
+                    cout << "SEARCH >> ";
+                    getline(cin, word);
+                    firstTime = false;
+                }
+
+
+                vector <Result> results;
+                parse->find(word, results, total, next, prev, time, start);
+                for (int i = 0; i < results.size(); i++) {
+                    cout << " === RESULT === " << endl;
+                    cout << "ID DOCUMENT: ";
+                    cout << results[i].docId << endl;
+                    cout << "TITLE: ";
+                    cout << results[i].title << endl;
+                    cout << "PREVIEW: ";
+                    cout << results[i].preview << endl;
+                    cout << endl;
+                }
+                cout << "About: " << total << " results (" << time << " seconds)" << endl << endl;
+
+                if (total == 0) {
+                    start = 0;
+                    cout << "¯\\_(꘠ヘ꘠)_/¯" << endl << " Sorry. We don't find your query. Try with the following options: " << endl;
+                    firstTime = true;
+                    continue;
+                }
+
+                searchMenu(next, prev);
+                getline(cin, suboption);
+                if (suboption == "1" && next > 0) {
+                    start = next;
+                } else if (suboption == "2" && prev > 0) {
+                    start = prev;
+                } else {
+                    break;
+                }
+            }
+        } else if (option == "2") {
+            string docId;
+            cout << "DOCUMENT ID >> ";
+            getline(cin, docId);
+            if (all_of(docId.begin(), docId.end(), ::isdigit)) {
+                int docIdInt = atoi(docId.c_str());
+                Document * doc = parse->getDocument(docIdInt);
+                if (doc) {
+                    cout << "TITLE: " << endl;
+                    cout << doc->title << endl;
+                    cout << "CONTENT: " << endl;
+                    cout << parse->getText(docIdInt, doc->start, doc->end);
+                    cout << endl << endl;
+                }
+            }
+
+
+        } else if (option == "0") {
             break;
+        } else {
+            cout << endl << "¯\\_(ツ)_/¯ Invalid option. Please try again ¯\\_(ツ)_/¯ " << endl << endl;
         }
-        parse->findSimilarWords(word);
-        //string result;
-        ////t.findOptions(word, &dictionary);
-        //vector<string> *list = findSimilarWords(t, word);
-        //cout << endl;
-        //for(int i = 0; i < list->size(); i++)
-        //    cout << (*list)[i] << endl;
-        //cout << endl;
-        //cout << vectorToJson(list) << endl;
-        //delete list;
-        // cout << "Levenshtein "<< endl;
-        // cout << getNearWord(t, dictionary, word)<< endl;
-        // cout << endl;
     }
 
     return 0;
