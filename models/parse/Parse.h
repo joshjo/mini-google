@@ -1,185 +1,167 @@
 #pragma once
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/foreach.hpp>
+#include <boost/bimap.hpp>
+#include <time.h>
 #include "../common/common.h"
 
 using namespace std;
-//Struct Document
+
+struct cmp
+{
+    template<class T>
+    bool operator()(T const &a, T const &b) const { return a > b; }
+};
 
 class Parse
 {
+public:
+	Tree * t;
 private:
 	string pathDocuments;
 	int countFiles;
 	map<int, string> files;
 	map<int, Document*> documents;
-	// vector<Word *> words;
+    size_t pos;
+    string word;
+    map<string *, WordDoc *> pagerank;
+	set<string> stopWords;
+    int pageSize;
+
+	//Variables constantes
+	const string startDoc= "<doc";
+	const string endDoc = "</doc>";
+	const string delimiterId = "id";
+	const string delimiterTitle = "title";
+	const string delimiterEndDoc = "ENDOFARTICLE";
+
+	//ofstream outputFile;
+
+	void initStopWords()
+	{
+		ifstream stopFile;
+		stopFile.open("parse/stopwords");
+		string sw;
+		while( stopFile >> sw)
+		{
+			stopWords.insert(sw);
+
+		}
+        auto it = stopWords.begin();
+        if (it == stopWords.end()) {
+            cout << "WARNING: Stopwords are not being loaded" << endl;
+        }
+	}
 
 	string removeCharacter(string word)
 	{
 		string newWord = "";
+		unsigned char charAt;
+		int c;
 		for (int i = 0 ; i < word.length() ; i ++)
 		{
-			unsigned char charAt = word[i];
-			int c = (int)charAt;
-
-			if ((c <= 57 && c >= 48) || (c <= 122 && c >= 97) || (c <= 90 && c >= 65))
-			{
+			charAt = word[i];
+			c = (int)charAt;
+			if((c >= 48 && c <= 57) || (c >= 65 && c <= 90)
+				|| (c >= 97 && c <= 122))
 				newWord += toupper(c);
-			}
-			else if( c == 13)
-			{
-				newWord += toupper(c);
-			}
-			else if (c == 225 || c == 226 || c == 227 || c == 228 || c == 230 || c == 224 || c==229) {
-					newWord += "A";
-				}
-			else if (c == 233 || c == 234 || c == 235 || c == 201 || c == 232) {
-				newWord += "E";
-			}
-			else if (c == 236 || c == 237) {
-				newWord += "I";
-			}
-			else if(c == 210 || c == 211 || c == 243) {
-				newWord += "O";
-			}
-			else if ((c <= 220 && c >= 217) || (c <= 252 && c >= 249))
-			{
-				newWord += "U";
-			}
-			else if (c == 199 || c == 212 || c == 231)
-			{
-				newWord += "C";
-			}
-			else if (c == 209)
-			{
-				newWord += "N";
-			}
-			else if (c == 181)
-			{
-				newWord += "U"; //micro
-			}
-			else
-			{
-				/*if ((c <= 47 && c >= 33) || (c <= 63 && c >= 58) || (c <= 96 && c >= 91) || (c <= 126 && c >= 123) || (c <= 159 && c >= 156) | (c <= 180 && c >= 166) || (c <= 188 && c >= 184) || (c <= 197 && c >= 191)
-					|| (c <= 208 && c >= 202) || (c <= 223 && c >= 213) || (c <= 255 && c >= 244) || (c <= 242 && c >= 238) || (c == 200) || c == 183 || c == 161 || c == 160)
-				{
-					newWord += " ";
-				}
-				cout << word << "-" << i << "ascii: " << c << endl;*/
-
-				//Caracteres en blanco
-				/*else if (c == 189 || c == 164)
-				{
-					newWord += " ";//"�il"  //"�,"
-				}
-				else if (c == 163 || c == 198 || c == 230 || c == 64)
-				{
-					newWord += " "; //�tla  230 198			//@ 64 //163 �
-				}
-				else if (c == 165)
-				{
-					newWord += " ";//� 165
-				}
-				else if (c == 182)
-				{
-					newWord += " ";//* 182
-				}
-				else if (c == 162)
-				{
-					newWord += " ";//% 162
-				}
-				else if (c == 190)
-				{
-					newWord += " ";// �
-				}*/
-			}
-
+			else if( c == 209 || c == 241)
+				newWord += "N"; //ñ
+			else if( (c >= 192 && c <= 194) || c == 196 || (c >= 224 && c <= 226) || c == 228)
+				newWord += "A"; //á
+			else if( (c >= 200 && c <= 203) || (c >= 232 && c <= 235) )
+				newWord += "E"; //É é
+			else if((c >= 204 && c <= 207) || (c >= 236 && c <= 239) )
+				newWord += "I"; //í
+			else if((c >= 210 && c <= 211) || c == 214 || c == 220 || (c >= 242 && c <= 244) || c == 246 || c == 252)
+				newWord += "O"; //ó
+			else if((c >= 217 && c <= 219) || (c >= 249 && c <= 250) )
+				newWord += "U"; //ú
+			 /*else
+			 {
+			 	cout << word << " - " << newWord << endl;
+			 	cout << word[i] << "- ascii: " << c << endl;
+			 	break;
+			 }*/
 
 		}
+		//cout << word << "-"<< newWord << endl << endl;
 		return newWord;
 	};
 
-	int getInformation(string delimiter, string line)
-	{
-		unsigned int ini = line.find(delimiter);
-		ini = ini + delimiter.length() + 2; // = + "
-		line.erase(0, ini);
-		unsigned int end = line.find("\"");
-		string result = line.substr(0, end);
 
-		return stoi(result);
+	string getInformation(string delimiter, string line)
+	{
+		size_t pos = line.find(delimiter) + delimiter.length() + 2;
+		line.erase(0, pos);
+		pos = line.find("\"");
+		return line.substr(0, pos);
 	};
 
 	void readFile(int idFile, string nameFile)
 	{
+        int start, idDocument;
 		ifstream inputFile;
-		inputFile.open(pathDocuments + "/" + nameFile);
+		inputFile.open(pathDocuments + nameFile);
+		// inputFile.open("spanishText1000015000");
 		if (inputFile)
 		{
-			cout << "File Found" << endl;
-			string line = "";
-			string startLine = "<doc";
-			string endLine = "</doc>";
+			//outputFile  << pathDocuments << nameFile << endl;
+			cout << "File Found " << nameFile << endl;
 			Document *tempDoc = NULL;
 			//int count = 0;
 			for (string line; getline(inputFile, line); )
 			{
 				//count++;
 				//Get information doc
-                int start = (int)inputFile.tellg() - line.length() - 1;
-				if (line.find(startLine) != string::npos)
+                start = (int)inputFile.tellg() - line.length() - 1;
+				/*cout << "star line" << start << endl;
+				cout << line << endl;*/
+				if (line.find(startDoc) != string::npos)
 				{
 					//Init Document
 					tempDoc = new Document();
-					tempDoc->idDocument =  getInformation("id", line);
-					tempDoc->start = start;
+					idDocument = stoi(getInformation(delimiterId, line));
+					tempDoc->title = getInformation(delimiterTitle, line);
+                    tempDoc->idDocument = idDocument;
+					tempDoc->start = start + line.length(); // +1
 					tempDoc->idFile = idFile;
+					// cout << "Titulo"<< tempDoc->title << endl;
+					// cout << "Inicio doc "<< tempDoc->start << endl;
 
 				}
-				else if (line.find(endLine) != string::npos)
+				else if (line.find(endDoc) != string::npos)
 				{
 					//Add document
-					tempDoc->end = inputFile.tellg();
+					tempDoc->end = start - delimiterEndDoc.length() - 1; //-1
 					documents.insert(make_pair(tempDoc->idDocument, tempDoc));
-
+					// cout << "- "<< tempDoc->end << endl;
 				}
 				else
 				{
-					size_t pos = 0;
-					string word;
-					string temp;
 
-					int initLine = start;
-                    int spaces = 0;
-					while ((pos = line.find(" ")) != string::npos) {
-						word = line.substr(0, pos);
-						line.erase(0, pos + 1);
+					//int initLine = start;
+					string word, temp;
+					istringstream readLine(line);
+					//int posLast = line.length();
+					int pos = 0;// TODO
+					while (readLine >> word)
+					{
 						temp = removeCharacter(word);
-						//count += pos;
-						if (temp.length() > 0)
+						set<string>::iterator a = stopWords.find(temp);
+						if(a == stopWords.end() && temp.length() > 1)
 						{
+							/*pos = (int)readLine.tellg();
 							Word * objWord = new Word();
 							objWord->idFile = idFile;
-							objWord->start = initLine + spaces;
-							initLine += pos;
-							objWord->end = initLine + spaces;
-							objWord->content = temp;
-                            words.insert(pair<string, Word *> (temp, objWord));
-							// words.push_back(objWord);
-                            initLine += 1;
-                            spaces = 0;
-						} else {
-                            spaces += 1;
-                        }
+							objWord->start = (pos > 0)? pos - temp.length() + start: start;
+							*/
+                            // cout << temp << endl;
+                           t->add(temp, idDocument, start);
+						}
 					}
-
-
 				}
-			}
-			string word;
-			while (inputFile >> word)
-			{
-				removeCharacter(word);
-
 			}
 		}
 		else
@@ -191,9 +173,9 @@ private:
 	vector<string> obtenerDirectorio()
 	{
 		vector<string> g1;
-		// g1.push_back("test");
+		//g1.push_back("prueba");
+		//  g1.push_back("spanishText_10000_15000");
         // g1.push_back("spanishText_15000_20000");
-		g1.push_back("spanishText_15000_20000");
 		// g1.push_back("spanishText_20000_25000");
 		// g1.push_back("spanishText_25000_30000");
 		// g1.push_back("spanishText_40000_45000");
@@ -248,38 +230,164 @@ private:
 		// g1.push_back("spanishText_460000_465000");
 		// g1.push_back("spanishText_465000_470000");
 		// g1.push_back("spanishText_470000_475000");
-		// g1.push_back("spanishText_475000_480000");
-		// g1.push_back("spanishText_480000_485000");
+		g1.push_back("spanishText_475000_480000");
+		g1.push_back("spanishText_480000_485000");
 		return g1;
 	};
 
 public:
-    multimap<string, Word *> words;
+    string find(string word, unsigned int start = 0) {
+        vector<string> words;
+        string response = "{ ";
+        boost::split(words, word, boost::is_any_of(" "));
+        unordered_map <int, unsigned short int> directories;
+        unordered_map <int, unsigned short int> pageranks;
+        unordered_map <int, unsigned short int> intersections;
+        unordered_map <int, vector<int> > positions;
+
+        clock_t tStart = clock();
+
+        int size = words.size();
+
+        for (auto it = words.begin(); it != words.end(); it++) {
+            Node * node;
+            bool found = t->find(removeCharacter(*it), node);
+            if (found) {
+                for (auto it = node->directory.begin(); it != node->directory.end(); it++) {
+                    // cout << "idDocument: " << it->first << endl;
+                    int idDocument = it->first;
+                    directories[idDocument] += 1;
+                    pageranks[idDocument] += it->second.pagerank;
+                    positions[idDocument].push_back(it->second.start);
+                }
+            }
+        }
+
+        for (auto it = directories.begin(); it != directories.end(); it++) {
+            int idDocument = it->first;
+            if (it->second == size) {
+                intersections[idDocument] += pageranks[idDocument];
+            }
+        }
+        double end = (double)(clock() - tStart) / CLOCKS_PER_SEC;
+
+        vector <pair <unsigned short int, int> > result;
+
+        for (auto it = intersections.begin(); it != intersections.end(); it++) {
+            result.push_back(*new pair<unsigned short int, int> (it->second, it->first));
+        }
+
+        sort(result.begin(), result.end(), cmp());
+
+        // vector <pair <int, unsigned short int> result (
+        //     intersections.begin(), intersections.end())
+
+        // sort(result.begin(), result.end(), [](auto &left, auto &right) {
+        //     return left.second < right.second;
+        // });
+        // cout << "=== resultado ===" << endl;
+
+        string results = "[ ";
+        auto it = result.begin();
+        for (; it != result.end(); it++) {
+        // for (; it != result.end() && it != result.begin() + start + pageSize; it++) {
+            results += " {\"docid\": " + to_string(it->second) + ",";
+            results += "\"title\": \"" + documents[it->second]->title + "\",";
+            auto range = positions.equal_range(it->second);
+            vector<int> pos = range.first->second;
+            if (pos.size()) {
+                results += "\"preview\": \"" + getText(it->second, pos[0]) + "\"";
+            } else {
+                results.pop_back();
+            }
+            results += "},";
+        }
+
+
+        int prev = (start - pageSize) > 0 ? (start - pageSize) : 0;
+        int next = (start + pageSize < results.size()) ? (start + pageSize) : 0;
+
+        results.pop_back();
+        results += "]";
+        response += "\"results\": " + results + ",";
+        response += "\"prev\": " + to_string(prev) + ",";
+        response += "\"next\": " + to_string(next) + ",";
+        response += "\"total\": " + to_string(result.size()) + ",";
+        // response += "\"previous\": " + ((start - pageSize) < 0) ? "-1" : to_string(start - pageSize) + ",";
+
+        response += "\"time\": " + to_string(end);
+        response += "}";
+
+        // Node * node;
+        // bool found = t->find(word, node);
+
+        // if (found) {
+        //     for (auto it = node->directory.begin(); it != node->directory.end(); it++) {
+        //         cout << "idDocument: " << it->first->idDocument << " - " << it->second << endl;
+        //     }
+        // } else {
+        //     cout << "buuuuuu :(" << endl;
+        // }
+        return response;
+    };
+
+    string getText(int idDocument, int start)
+    {
+        ifstream ifs;
+        Document * doc = documents[idDocument];
+        if ( ! doc) {
+            return "";
+        }
+        string s;
+        string fileName = files[doc->idFile];
+        // cout << "start: " << start << endl;
+
+        if (fileName != "") {
+            ifstream inputFile;
+            inputFile.open(pathDocuments + fileName);
+            int end = start + 20;
+            inputFile.seekg(start);
+            s.resize(end - start);
+            inputFile.read(&s[0], end - start);
+        }
+
+        return escape_json(s);
+
+        // //Get Obj Document  by idodcumento
+        // if(documents.find(idDocument) != documents.end())
+        // {
+        //     Document *doc = documents.at(idDocument);
+        //     //Get File
+        //     if(files.find(doc->idFile) != files.end())
+        //     {
+        //         string name = files.at(doc->idFile);
+        //         //Si se tiene end  ini de word?
+        //         ifs.open (pathDocuments + name);
+        //         ifs.seekg(start);//(doc->start);
+        //         // int length = ifs.tellg();
+        //         int length = 30;
+        //         char * buffer = new char [length];
+        //         //string buffer;
+        //         ifs.read(buffer,length);
+        //         string out(buffer);
+        //         cout << "Text :" << out <<endl;
+        //     }
+        // }
+    };
 
 	Parse(string pathDirectory)
 	{
-		this->pathDocuments = pathDirectory;
+		this->pos = 0;
+        this->pathDocuments = pathDirectory;
+        this->t = new Tree();
+        this->pageSize = 10;
+		initStopWords();
 	};
-
-    void someContent(string & str) {
-        auto search = words.equal_range(str);
-
-        for (auto it = search.first; it != search.second; it++) {
-            ifstream file(pathDocuments + "/" + files[it->second->idFile]);
-
-            int start = it->second->start;
-            int end = it->second->end + 30;
-            file.seekg(start);
-            std::string s;
-            s.resize(end - start);
-            file.read(&s[0], end - start);
-            cout << files[it->second->idFile] << ": " << s << endl;
-            file.close();
-        }
-    }
 
 	void processFile()
 	{
+
+		//outputFile.open("output.txt");
 		vector<string> listado = obtenerDirectorio();
 		for (int i = 0; i <listado.size(); i++)
 		{
@@ -287,7 +395,9 @@ public:
 			files.insert(make_pair(countFiles, listado.at(i)));
 			readFile(countFiles, listado.at(i));
 		}
+		//outputFile.close();
 	};
+
 	~Parse();
 };
 

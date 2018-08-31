@@ -17,7 +17,6 @@
 #include <boost/filesystem.hpp>
 #include <fstream>
 #include <vector>
-#define MAX_SIZE 10
 #ifdef HAVE_OPENSSL
 #include "crypto.hpp"
 #endif
@@ -36,11 +35,10 @@ vector<string>* findSimilarWords(Tree* t, string word){
     return dictionary;
 }
 
-string vectorToJson(vector<string> *list, int maxSize){
+string vectorToJson(vector<string> *list){
     string json_string = "{\"words\":[";
-    if(list->size() < maxSize)
-        maxSize = list->size();
-    
+    int maxSize = list->size();
+
     for(int i = 0; i < maxSize; i++){
         json_string += "\""+(*list)[i]+"\"";
         if(i != maxSize-1)
@@ -50,31 +48,46 @@ string vectorToJson(vector<string> *list, int maxSize){
     return json_string;
 }
 
+string getNearWord(Tree t, vector<vector<string>*> *dictionary, string find_word){
+    std::transform(find_word.begin(), find_word.end(),find_word.begin(), ::toupper);
+    if(find_word.length() < 2)
+        return "VACIO";
+    return t.processMostNear(dictionary, find_word);
+}
+
 int main() {
 
-    Tree *tree = new Tree();
-    Parse *parse = new Parse("../../files/");
+    // Tree *tree = new Tree();
+    Parse * parse = new Parse("../../files/");
     parse->processFile();
 
-    for(multimap<string, Word *>::iterator it = parse->words.begin(), end = parse->words.end(); it != end; it = parse->words.upper_bound(it->first)) {
-        tree->add(it->first);
-    }
+    // for(multimap<string, Word *>::iterator it = parse->words.begin(), end = parse->words.end(); it != end; it = parse->words.upper_bound(it->first)) {
+    //     tree->add(it->first);
+    // }
+
+    vector<vector<string>*> *dictionary = new vector<vector<string>*>();
+    // tree->loadData(dictionary, "../../files/differentWords.txt");
 
     HttpServer server;
     server.config.port = 8090;
 
-
-    server.resource["^/altavista$"]["GET"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+    server.resource["^/search$"]["GET"] = [parse](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
         stringstream stream;
         SimpleWeb::CaseInsensitiveMultimap header;
         //stream << tree->get_json_string();
-        stream << "test";
-        response->write_get(stream,header);
+        auto query_fields = request->parse_query_string();
+        auto q_range = query_fields.equal_range("q");
+        auto q_it = q_range.first;
+        auto start_range = query_fields.equal_range("start");
+        auto start_it = start_range.first;
+        unsigned int start = stoi( start_it->second);
 
+        stream << parse->find(q_it->second, start);
+        response->write_get(stream,header);
     };
 
-    /* http://localhost:8090/altavista/getOptions?word=test */
-    server.resource["^/altavista/getOptions$"]["GET"] = [tree](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+        /* http://localhost:8090/altavista/getOptions?word=test */
+    server.resource["^/altavista/getOptions$"]["GET"] = [parse](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
         stringstream stream;
         SimpleWeb::CaseInsensitiveMultimap header;
 
@@ -84,8 +97,8 @@ int main() {
             for(auto &field : query_fields)
                 word = field.second;
 
-            vector<string> *list = findSimilarWords(tree, word);
-            stream << vectorToJson(list, MAX_SIZE);
+            vector<string> *list = findSimilarWords(parse->t, word);
+            stream << vectorToJson(list);
 
             response->write_get(stream,header);
             delete list;
