@@ -17,7 +17,6 @@
 #include <boost/filesystem.hpp>
 #include <fstream>
 #include <vector>
-#define MAX_SIZE 10
 #ifdef HAVE_OPENSSL
 #include "crypto.hpp"
 #endif
@@ -36,18 +35,24 @@ vector<string>* findSimilarWords(Tree* t, string word){
     return dictionary;
 }
 
-string vectorToJson(vector<string> *list, int maxSize){
-    string json_string = "{[";
-    if(list->size() < maxSize)
-        maxSize = list->size();
-
+string vectorToJson(vector<string> *list){
+    string json_string = "{\"words\":[";
+    int maxSize = list->size();
+    
     for(int i = 0; i < maxSize; i++){
-        json_string += "'"+(*list)[i]+"'";
+        json_string += "\""+(*list)[i]+"\"";
         if(i != maxSize-1)
             json_string += ",";
     }
     json_string += "]}";
     return json_string;
+}
+
+string getNearWord(Tree t, vector<vector<string>*> *dictionary, string find_word){
+    std::transform(find_word.begin(), find_word.end(),find_word.begin(), ::toupper);
+    if(find_word.length() < 2)
+        return "VACIO";
+    return t.processMostNear(dictionary, find_word);
 }
 
 int main() {
@@ -59,6 +64,9 @@ int main() {
     // for(multimap<string, Word *>::iterator it = parse->words.begin(), end = parse->words.end(); it != end; it = parse->words.upper_bound(it->first)) {
     //     tree->add(it->first);
     // }
+
+    vector<vector<string>*> *dictionary = new vector<vector<string>*>();
+    // tree->loadData(dictionary, "../../files/differentWords.txt");
 
     HttpServer server;
     server.config.port = 8090;
@@ -78,58 +86,30 @@ int main() {
         response->write_get(stream,header);
     };
 
-    server.resource["^/info$"]["GET"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+        /* http://localhost:8090/altavista/getOptions?word=test */
+    server.resource["^/altavista/getOptions$"]["GET"] = [parse](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
         stringstream stream;
-        stream << "<h1>Request from " << request->remote_endpoint_address() << ":" << request->remote_endpoint_port() << "</h1>";
+        SimpleWeb::CaseInsensitiveMultimap header;
 
-        stream << request->method << " " << request->path << " HTTP/" << request->http_version;
+        try {
+            string word;
+            auto query_fields = request->parse_query_string();
+            for(auto &field : query_fields)
+                word = field.second;
 
-        stream << "<h2>Query Fields</h2>";
-        auto query_fields = request->parse_query_string();
-        for(auto &field : query_fields)
-          stream << field.first << ": " << field.second << "<br>";
+            vector<string> *list = findSimilarWords(parse->t, word);
+            stream << vectorToJson(list);
 
-        stream << "<h2>Header Fields</h2>";
-        for(auto &field : request->header)
-          stream << field.first << ": " << field.second << "<br>";
+            response->write_get(stream,header);
+            delete list;
 
-        response->write(stream);
+        } catch (const exception &e) {
+            response->write(
+                SimpleWeb::StatusCode::client_error_bad_request,
+                e.what()
+            );
+        }
     };
-
-
-    // server.resource["^/altavista$"]["GET"] = [](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
-    //     stringstream stream;
-    //     SimpleWeb::CaseInsensitiveMultimap header;
-    //     //stream << tree->get_json_string();
-    //     stream << "test";
-    //     response->write_get(stream,header);
-
-    // };
-
-    // /* http://localhost:8090/altavista/getOptions?word=test */
-    // server.resource["^/altavista/getOptions$"]["GET"] = [tree](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
-    //     stringstream stream;
-    //     SimpleWeb::CaseInsensitiveMultimap header;
-
-    //     try {
-    //         string word;
-    //         auto query_fields = request->parse_query_string();
-    //         for(auto &field : query_fields)
-    //             word = field.second;
-
-    //         vector<string> *list = findSimilarWords(tree, word);
-    //         stream << vectorToJson(list, MAX_SIZE);
-
-    //         response->write_get(stream,header);
-    //         delete list;
-
-    //     } catch (const exception &e) {
-    //         response->write(
-    //             SimpleWeb::StatusCode::client_error_bad_request,
-    //             e.what()
-    //         );
-    //     }
-    // };
 
 
     server.on_error = [](shared_ptr<HttpServer::Request> /*request*/, const SimpleWeb::error_code & /*ec*/) {

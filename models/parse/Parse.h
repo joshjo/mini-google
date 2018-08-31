@@ -16,6 +16,8 @@ struct cmp
 
 class Parse
 {
+public:
+	Tree * t;
 private:
 	string pathDocuments;
 	int countFiles;
@@ -24,7 +26,6 @@ private:
     size_t pos;
     string word;
     map<string *, WordDoc *> pagerank;
-   	Tree * t;
 	set<string> stopWords;
     int pageSize;
 

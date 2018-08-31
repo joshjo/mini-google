@@ -13,7 +13,7 @@ vector<string>* findSimilarWords(Tree t, string word){
 }
 
 string vectorToJson(vector<string> *list){
-    string json_string = "{[";
+    string json_string = "{'words':[";
     for(int i = 0; i < list->size(); i++){
         json_string += "'"+(*list)[i]+"'";
         if(i != list->size()-1)
@@ -21,6 +21,13 @@ string vectorToJson(vector<string> *list){
     }
     json_string += "]}";
     return json_string;
+}
+
+string getNearWord(Tree t, vector<vector<string>*> *dictionary, string find_word){
+    std::transform(find_word.begin(), find_word.end(),find_word.begin(), ::toupper);
+    if(find_word.length() < 2)
+        return "VACIO";
+    return t.processMostNear(dictionary, find_word);
 }
 
 int main(int argc, char *argv[]) {
@@ -60,7 +67,9 @@ int main(int argc, char *argv[]) {
     //     t.add(it->first);
     // }
 
-
+    vector<vector<string>*> *dictionary = new vector<vector<string>*>();
+    t.loadData(dictionary, "../../files/differentWords.txt");
+    cout << "Loaded " << dictionary->size() << endl;
     // for(int i = 0; i < list.size(); i++)
     // {
 
@@ -93,16 +102,18 @@ int main(int argc, char *argv[]) {
         if (word == "exit") {
             break;
         }
-        string result;
-
-        parse->find(word);
-        // if (found) {
-        //     cout << ":) Found " << result << endl;
-        //     // parse->someContent(result);
-        // } else {
-        //     cout << ":( NOT Found";
-        // }
-        // cout << endl;
+        //string result;
+        ////t.findOptions(word, &dictionary);
+        //vector<string> *list = findSimilarWords(t, word); 
+        //cout << endl;
+        //for(int i = 0; i < list->size(); i++)
+        //    cout << (*list)[i] << endl;
+        //cout << endl;
+        //cout << vectorToJson(list) << endl;
+        //delete list;
+        cout << "Levenshtein "<< endl;
+        cout << getNearWord(t, dictionary, word)<< endl;
+        cout << endl;
     }
 
     return 0;

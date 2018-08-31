@@ -1,5 +1,10 @@
 #ifndef TREE_H
 #define TREE_H
+
+#define MAX_SIZE_OPTIONS 10
+#define MIN3(a, b, c) ((a) < (b) ? ((a) < (c) ? (a) : (c)) : ((b) < (c) ? (b) : (c)))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
 #include <algorithm>
 #include "node.h"
 
@@ -37,19 +42,82 @@ public:
         printSons(root);
     }
 
+    void loadData(vector<vector<string>*>* dictionary, string location){
+        string line, dataBuffer;
+        ifstream file (location);
+        int max = 0;
+        if (file.is_open()){
+            while ( getline (file,line) ){
+                size_t len = line.length();
+                while(len >= dictionary->size())
+                    dictionary->push_back(new vector<string>);
+                (*dictionary)[len]->push_back(line);
+                if (len > max)
+                    max = len;
+            }
+            file.close();
+        }
+    }
+
+    size_t levenshtein_distance(string s1, string s2){
+        unsigned int s1len, s2len, x, y, lastdiag, olddiag;
+        s1len = s1.length();
+        s2len = s2.length();
+        unsigned int column[s1len+1];
+
+        for (y = 1; y <= s1len; y++)
+            column[y] = y;
+
+        for (x = 1; x <= s2len; x++) {
+            column[0] = x;
+            for (y = 1, lastdiag = x-1; y <= s1len; y++) {
+                olddiag = column[y];
+                column[y] = MIN3(column[y] + 1, column[y-1] + 1, lastdiag + (s1[y-1] == s2[x-1] ? 0 : 1));
+                lastdiag = olddiag;
+            }
+        }
+        return column[s1len];
+    }
+
+    string processMostNear(vector<vector<string>*> *dictionary, string find_word){
+        //cout << "-0" << endl;
+        
+        
+        //cout << "-1" << endl;
+        size_t distance, min = INT_MAX;
+        int minPos;
+        
+        size_t len = find_word.length();
+
+        for(int i = 0; i < (*dictionary)[len]->size(); i++){
+            distance = levenshtein_distance(find_word, (*(*dictionary)[len])[i]);
+            if(min > distance){
+                min = distance;
+                minPos = i;
+                //cout << (*dictionary)[minPos] << " " << distance << endl;
+            }
+        }
+        return (*(*dictionary)[len])[minPos] ;
+    }
+
     void getWords(Node * & node, vector<string> *dictionary){
-        if(node->isWord)
-            dictionary->push_back(node->str);
+        if(dictionary->size() < MAX_SIZE_OPTIONS){
 
-        vector<string> *temp = new vector<string>();
+            if(node->isWord)
+                dictionary->push_back(node->str);
 
-        for (int i = 0; i < ALPHABET_LENGTH; i++)
-            if (node->sons[i])
-                getWords(node->sons[i], temp);
+            vector<string> *temp = new vector<string>();
 
-        for (int i = 0; i < temp->size(); i++)
-            dictionary->push_back(node->str+(*temp)[i]);
+            for (size_t i = 0; i < ALPHABET_LENGTH; i++)
+                if (node->sons[i])
+                    getWords(node->sons[i], temp);
 
+            int toFill = MAX_SIZE_OPTIONS - dictionary->size();
+            int realTemp = temp->size() > MAX_SIZE_OPTIONS ? toFill : (temp->size() > toFill ? toFill : temp->size());
+
+            for (size_t i = 0; i < realTemp; i++) 
+                dictionary->push_back(node->str+(*temp)[i]);
+        }
     }
 
     void findOptions(string str, vector<string> *dictionary){
