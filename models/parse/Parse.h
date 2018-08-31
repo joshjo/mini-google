@@ -283,14 +283,6 @@ public:
 
         sort(result.begin(), result.end(), cmp());
 
-        // vector <pair <int, unsigned short int> result (
-        //     intersections.begin(), intersections.end())
-
-        // sort(result.begin(), result.end(), [](auto &left, auto &right) {
-        //     return left.second < right.second;
-        // });
-        // cout << "=== resultado ===" << endl;
-
         string results = "[ ";
         auto it = result.begin();
         int resultsSize = result.size();
@@ -301,7 +293,7 @@ public:
             auto range = positions.equal_range(it->second);
             vector<int> pos = range.first->second;
             if (pos.size()) {
-                results += "\"preview\": \"" + getText(it->second, pos[0]) + "\"";
+                results += "\"preview\": \"" + getText(it->second, pos[0], pos[0] + 20) + "\"";
             } else {
                 results.pop_back();
             }
@@ -322,20 +314,16 @@ public:
         response += "\"time\": " + to_string(end);
         response += "}";
 
-        // Node * node;
-        // bool found = t->find(word, node);
-
-        // if (found) {
-        //     for (auto it = node->directory.begin(); it != node->directory.end(); it++) {
-        //         cout << "idDocument: " << it->first->idDocument << " - " << it->second << endl;
-        //     }
-        // } else {
-        //     cout << "buuuuuu :(" << endl;
-        // }
         return response;
     };
 
-    string getText(int idDocument, int start)
+    string getDocumentContent(int idDocument) {
+        Document * doc = documents[idDocument];
+        string response = "{\"content\": \"" + getText(idDocument, doc->start, doc->end) + "\", \"title\": \"" + doc->title + "\" }";
+        return response;
+    }
+
+    string getText(int idDocument, int start, int end)
     {
         ifstream ifs;
         Document * doc = documents[idDocument];
@@ -344,39 +332,16 @@ public:
         }
         string s;
         string fileName = files[doc->idFile];
-        // cout << "start: " << start << endl;
 
         if (fileName != "") {
             ifstream inputFile;
             inputFile.open(pathDocuments + fileName);
-            int end = start + 20;
             inputFile.seekg(start);
             s.resize(end - start);
             inputFile.read(&s[0], end - start);
         }
 
         return escape_json(s);
-
-        // //Get Obj Document  by idodcumento
-        // if(documents.find(idDocument) != documents.end())
-        // {
-        //     Document *doc = documents.at(idDocument);
-        //     //Get File
-        //     if(files.find(doc->idFile) != files.end())
-        //     {
-        //         string name = files.at(doc->idFile);
-        //         //Si se tiene end  ini de word?
-        //         ifs.open (pathDocuments + name);
-        //         ifs.seekg(start);//(doc->start);
-        //         // int length = ifs.tellg();
-        //         int length = 30;
-        //         char * buffer = new char [length];
-        //         //string buffer;
-        //         ifs.read(buffer,length);
-        //         string out(buffer);
-        //         cout << "Text :" << out <<endl;
-        //     }
-        // }
     };
 
 	Parse(string pathDirectory)
