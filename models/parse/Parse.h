@@ -110,10 +110,8 @@ private:
 			//outputFile  << pathDocuments << nameFile << endl;
 			cout << "File Found " << nameFile << endl;
 			Document *tempDoc = NULL;
-			//int count = 0;
 			for (string line; getline(inputFile, line); )
 			{
-				//count++;
 				//Get information doc
                 start = (int)inputFile.tellg() - line.length() - 1;
 				if (line.find(startDoc) != string::npos)
@@ -132,54 +130,51 @@ private:
 				else if (line.find(endDoc) != string::npos)
 				{
 					//Add document
-					tempDoc->end = start - delimiterEndDoc.length() - 1; //-1
+					tempDoc->end = start - delimiterEndDoc.length() - 2; //-1
 					documents.insert(make_pair(tempDoc->idDocument, tempDoc));
 					// cout << "- "<< tempDoc->end << endl;
 				}
 				else
 				{
 
-					//int initLine = start;
 					string word, temp;
 					istringstream readLine(line);
-					int pos = (int)inputFile.tellg() - line.length() - 1;
-					//cout << pos << " : " << line.substr(0, 20) << endl;
-					int last = 0;
-					while (readLine >> word)
+					int iniLine = (int)inputFile.tellg() - line.length() - 1;
+					int startchar = 0;					
+					int countChar = iniLine;
+					set<string>::iterator a;
+					for(int i = 0 ; i <line.length(); i++)
 					{
-						if(!strstr(word.c_str(),url.c_str()))
-						{
-							last = ((int)readLine.tellg() > 0)? (int)readLine.tellg() + pos: last + word.length();
-							temp = removeCharacter(word);
-							set<string>::iterator a = stopWords.find(temp);
-							if(a == stopWords.end() && temp.length() > 1)
-							{
-								int tpos = last - word.length();
-								t->add(temp, idDocument, tpos);
-								//cout << temp << " - " << tpos << endl;
-							}
-						}
-					}
-					/*for(int i = 0 ; i <line.length(); i++)
-					{
-						pos++;
-						if((line.at(i) == ' ' || i == line.length()-1) && word.length() > 0)
+						countChar++;
+						if((line.at(i) == ' '  && word.length() > 0))
 						{
 							temp = removeCharacter(word);
-							set<string>::iterator a = stopWords.find(temp);
+							a = stopWords.find(temp);
 							if(a == stopWords.end() && temp.length() > 1)
 							{
-								t->add(temp, idDocument, pos);
-								cout << temp << " - " << pos << endl;
-								
+								startchar = countChar - 1 - word.length();
+								t->add(temp, idDocument, startchar);
+								iniLine += countChar;
 							}
 							word = "";
 						}
 						else
 						{
 							word += line.at(i);
+							
 						}
-					}*/
+					}
+					if(word.length() > 0)
+					{
+						temp = removeCharacter(word);
+						a = stopWords.find(temp);
+						if(a == stopWords.end() && temp.length() > 1)
+						{
+							startchar = countChar - 1 - word.length();
+							t->add(temp, idDocument, startchar);
+						}
+						word = "";
+					}
 				}
 			}
 		}
@@ -193,8 +188,8 @@ private:
 	{
 		vector<string> g1;
 		//g1.push_back("prueba");
-		//  g1.push_back("spanishText_10000_15000");
-         g1.push_back("spanishText_15000_20000");
+		g1.push_back("spanishText1000015000");
+        //g1.push_back("spanishText_15000_20000");
 		// g1.push_back("spanishText_20000_25000");
 		// g1.push_back("spanishText_25000_30000");
 		// g1.push_back("spanishText_40000_45000");
