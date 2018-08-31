@@ -133,7 +133,7 @@ private:
 				else if (line.find(endDoc) != string::npos)
 				{
 					//Add document
-					tempDoc->end = start - delimiterEndDoc.length() - 1; //-1 
+					tempDoc->end = start - delimiterEndDoc.length() - 1; //-1
 					documents.insert(make_pair(tempDoc->idDocument, tempDoc));
 					// cout << "- "<< tempDoc->end << endl;
 				}
@@ -291,6 +291,7 @@ public:
         for (; it != result.end(); it++) {
         // for (; it != result.end() && it != result.begin() + start + pageSize; it++) {
             results += " {\"docid\": " + to_string(it->second) + ",";
+            results += "\"title\": \"" + documents[it->second]->title + "\",";
             auto range = positions.equal_range(it->second);
             vector<int> pos = range.first->second;
             if (pos.size()) {
