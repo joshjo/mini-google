@@ -13,7 +13,7 @@ function autocomplete(inp, arr) {
 
       /*cierra cualquier lista ya abierta de valores autocompletados:*/
       closeAllLists();
-      if (!val) { return false;}
+      if (!val || val === " ") { return false;}
       currentFocus = -1;
 
       autoResponse(val);
@@ -182,10 +182,11 @@ function autoResponse(val, dataSuggest){
             // refreshArray(JSON.parse(http.responseText));
             //
 
-            console.log(JSON.parse(http.responseText));
+            console.log(http.responseText.length);
             var arr = [];
+
             for( var i = 0; i < 10; i++ ){
-              //if(JSON.parse(http.responseText)["words"][i] !=== "undefined")
+              //if(JSON.parse(http.responseText) !== "undefined")
                 arr[i] = JSON.parse(http.responseText)["words"][i];
             }
 
