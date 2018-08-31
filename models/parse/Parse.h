@@ -32,6 +32,7 @@ private:
 	//Variables constantes
 	const string startDoc= "<doc";
 	const string endDoc = "</doc>";
+	const string url = "http://";
 	const string delimiterId = "id";
 	const string delimiterTitle = "title";
 	const string delimiterEndDoc = "ENDOFARTICLE";
@@ -104,7 +105,6 @@ private:
         int start, idDocument;
 		ifstream inputFile;
 		inputFile.open(pathDocuments + nameFile);
-		// inputFile.open("spanishText1000015000");
 		if (inputFile)
 		{
 			//outputFile  << pathDocuments << nameFile << endl;
@@ -116,8 +116,6 @@ private:
 				//count++;
 				//Get information doc
                 start = (int)inputFile.tellg() - line.length() - 1;
-				/*cout << "star line" << start << endl;
-				cout << line << endl;*/
 				if (line.find(startDoc) != string::npos)
 				{
 					//Init Document
@@ -144,23 +142,44 @@ private:
 					//int initLine = start;
 					string word, temp;
 					istringstream readLine(line);
-					//int posLast = line.length();
-					int pos = 0;// TODO
+					int pos = (int)inputFile.tellg() - line.length() - 1;
+					//cout << pos << " : " << line.substr(0, 20) << endl;
+					int last = 0;
 					while (readLine >> word)
 					{
-						temp = removeCharacter(word);
-						set<string>::iterator a = stopWords.find(temp);
-						if(a == stopWords.end() && temp.length() > 1)
+						if(!strstr(word.c_str(),url.c_str()))
 						{
-							/*pos = (int)readLine.tellg();
-							Word * objWord = new Word();
-							objWord->idFile = idFile;
-							objWord->start = (pos > 0)? pos - temp.length() + start: start;
-							*/
-                            // cout << temp << endl;
-                           t->add(temp, idDocument, start);
+							last = ((int)readLine.tellg() > 0)? (int)readLine.tellg() + pos: last + word.length();
+							temp = removeCharacter(word);
+							set<string>::iterator a = stopWords.find(temp);
+							if(a == stopWords.end() && temp.length() > 1)
+							{
+								int tpos = last - word.length();
+								t->add(temp, idDocument, tpos);
+								//cout << temp << " - " << tpos << endl;
+							}
 						}
 					}
+					/*for(int i = 0 ; i <line.length(); i++)
+					{
+						pos++;
+						if((line.at(i) == ' ' || i == line.length()-1) && word.length() > 0)
+						{
+							temp = removeCharacter(word);
+							set<string>::iterator a = stopWords.find(temp);
+							if(a == stopWords.end() && temp.length() > 1)
+							{
+								t->add(temp, idDocument, pos);
+								cout << temp << " - " << pos << endl;
+								
+							}
+							word = "";
+						}
+						else
+						{
+							word += line.at(i);
+						}
+					}*/
 				}
 			}
 		}
