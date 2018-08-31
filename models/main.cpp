@@ -63,13 +63,14 @@ int main(int argc, char *argv[]) {
     Parse *parse = new Parse("../../files/");
     parse->processFile();
 
+
     // for(unordered_multimap<string, WordDoc *>::iterator it = parse->words.begin(), end = parse->words.end(); it != end; it = parse->words.upper_bound(it->first)) {
     //     t.add(it->first);
     // }
 
-    vector<vector<string>*> *dictionary = new vector<vector<string>*>();
-    t.loadData(dictionary, "../../files/differentWords.txt");
-    cout << "Loaded " << dictionary->size() << endl;
+    // vector<vector<string>*> *dictionary = new vector<vector<string>*>();
+    // t.loadData(dictionary, "../../files/differentWords.txt");
+    // cout << "Loaded " << dictionary->size() << endl;
     // for(int i = 0; i < list.size(); i++)
     // {
 
@@ -102,18 +103,19 @@ int main(int argc, char *argv[]) {
         if (word == "exit") {
             break;
         }
+        parse->findSimilarWords(word);
         //string result;
         ////t.findOptions(word, &dictionary);
-        //vector<string> *list = findSimilarWords(t, word); 
+        //vector<string> *list = findSimilarWords(t, word);
         //cout << endl;
         //for(int i = 0; i < list->size(); i++)
         //    cout << (*list)[i] << endl;
         //cout << endl;
         //cout << vectorToJson(list) << endl;
         //delete list;
-        cout << "Levenshtein "<< endl;
-        cout << getNearWord(t, dictionary, word)<< endl;
-        cout << endl;
+        // cout << "Levenshtein "<< endl;
+        // cout << getNearWord(t, dictionary, word)<< endl;
+        // cout << endl;
     }
 
     return 0;

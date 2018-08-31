@@ -13,7 +13,7 @@ function autocomplete(inp, arr) {
 
       /*cierra cualquier lista ya abierta de valores autocompletados:*/
       closeAllLists();
-      if (!val) { return false;}
+      if (!val || val === " ") { return false;}
       currentFocus = -1;
 
       autoResponse(val);
@@ -175,7 +175,7 @@ function querySearch(){
 function autoResponse(val, dataSuggest){
 
     var http = new XMLHttpRequest();
-    var url = 'http://localhost:8090/altavista/getOptions?word='+ val;
+    var url = 'http://localhost:8090/altavista/getOptions?word='+ encodeURIComponent(val);
     var params = 'orem=ipsum&name=binny';
     // var arr =[];
     http.open('GET', url, true);
