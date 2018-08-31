@@ -80,11 +80,27 @@ int main() {
         auto q_it = q_range.first;
         auto start_range = query_fields.equal_range("start");
         auto start_it = start_range.first;
-        unsigned int start = stoi( start_it->second);
+        int start = stoi( start_it->second);
 
         stream << parse->find(q_it->second, start);
         response->write_get(stream,header);
     };
+
+
+    server.resource["^/content$"]["GET"] = [parse](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+        stringstream stream;
+        SimpleWeb::CaseInsensitiveMultimap header;
+        //stream << tree->get_json_string();
+        auto query_fields = request->parse_query_string();
+        auto q_range = query_fields.equal_range("id");
+        auto q_it = q_range.first;
+        int docid = stoi(q_it->second);
+
+        stream << parse->getDocumentContent(docid);
+        response->write_get(stream,header);
+    };
+
+
 
         /* http://localhost:8090/altavista/getOptions?word=test */
     server.resource["^/altavista/getOptions$"]["GET"] = [parse](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
@@ -98,9 +114,10 @@ int main() {
                 word = field.second;
 
             vector<string> *list = findSimilarWords(parse->t, word);
+            // stream << "HOLA MUNDO";
             stream << vectorToJson(list);
 
-            response->write_get(stream,header);
+            response->write_get(stream, header);
             delete list;
 
         } catch (const exception &e) {
