@@ -24,7 +24,7 @@ private:
     size_t pos;
     string word;
     map<string *, WordDoc *> pagerank;
-    Tree * t;
+   	Tree * t;
 	set<string> stopWords;
     int pageSize;
 
@@ -32,6 +32,8 @@ private:
 	const string startDoc= "<doc";
 	const string endDoc = "</doc>";
 	const string delimiterId = "id";
+	const string delimiterTitle = "title";
+	const string delimiterEndDoc = "ENDOFARTICLE";
 
 	//ofstream outputFile;
 
@@ -88,12 +90,12 @@ private:
 	};
 
 
-	int getInformation(string delimiter, string line)
+	string getInformation(string delimiter, string line)
 	{
 		size_t pos = line.find(delimiter) + delimiter.length() + 2;
 		line.erase(0, pos);
 		pos = line.find("\"");
-		return stoi(line.substr(0, pos));
+		return line.substr(0, pos);
 	};
 
 	void readFile(int idFile, string nameFile)
@@ -101,6 +103,7 @@ private:
         int start, idDocument;
 		ifstream inputFile;
 		inputFile.open(pathDocuments + nameFile);
+		// inputFile.open("spanishText1000015000");
 		if (inputFile)
 		{
 			//outputFile  << pathDocuments << nameFile << endl;
@@ -118,20 +121,21 @@ private:
 				{
 					//Init Document
 					tempDoc = new Document();
-					idDocument = getInformation(delimiterId, line);
+					idDocument = stoi(getInformation(delimiterId, line));
+					tempDoc->title = getInformation(delimiterTitle, line);
                     tempDoc->idDocument = idDocument;
-					tempDoc->start = start;
+					tempDoc->start = start + line.length(); // +1
 					tempDoc->idFile = idFile;
-					// cout << "Leyendo documento " << tempDoc->idDocument;
+					// cout << "Titulo"<< tempDoc->title << endl;
+					// cout << "Inicio doc "<< tempDoc->start << endl;
 
 				}
 				else if (line.find(endDoc) != string::npos)
 				{
 					//Add document
-					tempDoc->end = inputFile.tellg();
+					tempDoc->end = start - delimiterEndDoc.length() - 1; //-1 
 					documents.insert(make_pair(tempDoc->idDocument, tempDoc));
-					// cout << " Fin de lectura" << tempDoc->idDocument << endl;
-
+					// cout << "- "<< tempDoc->end << endl;
 				}
 				else
 				{
@@ -147,7 +151,13 @@ private:
 						set<string>::iterator a = stopWords.find(temp);
 						if(a == stopWords.end() && temp.length() > 1)
 						{
-                            t->add(temp, idDocument, start);
+							/*pos = (int)readLine.tellg();
+							Word * objWord = new Word();
+							objWord->idFile = idFile;
+							objWord->start = (pos > 0)? pos - temp.length() + start: start;
+							*/
+                            // cout << temp << endl;
+                           t->add(temp, idDocument, start);
 						}
 					}
 				}
@@ -163,8 +173,8 @@ private:
 	{
 		vector<string> g1;
 		//g1.push_back("prueba");
-		// g1.push_back("spanishText_10000_15000");
-  //       g1.push_back("spanishText_15000_20000");
+		//  g1.push_back("spanishText_10000_15000");
+        // g1.push_back("spanishText_15000_20000");
 		// g1.push_back("spanishText_20000_25000");
 		// g1.push_back("spanishText_25000_30000");
 		// g1.push_back("spanishText_40000_45000");
