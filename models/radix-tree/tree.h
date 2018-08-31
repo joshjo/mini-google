@@ -81,12 +81,12 @@ public:
 
     string processMostNear(vector<vector<string>*> *dictionary, string find_word){
         //cout << "-0" << endl;
-        
-        
+
+
         //cout << "-1" << endl;
         size_t distance, min = INT_MAX;
         int minPos;
-        
+
         size_t len = find_word.length();
 
         for(int i = 0; i < (*dictionary)[len]->size(); i++){
@@ -115,12 +115,12 @@ public:
             int toFill = MAX_SIZE_OPTIONS - dictionary->size();
             int realTemp = temp->size() > MAX_SIZE_OPTIONS ? toFill : (temp->size() > toFill ? toFill : temp->size());
 
-            for (size_t i = 0; i < realTemp; i++) 
+            for (size_t i = 0; i < realTemp; i++)
                 dictionary->push_back(node->str+(*temp)[i]);
         }
     }
 
-    void findOptions(string str, vector<string> *dictionary){
+    void findOptions(string str, vector<string> * & dictionary){
         std::transform(str.begin(), str.end(),str.begin(), ::toupper);
         size_t position = 0;
         Node * node = root;
@@ -135,9 +135,8 @@ public:
             if (str.size() && next) {
                 node = next;
             } else {
-                if(next){
+                if(node){
                     string initWord = prevStr.substr(0, absPosition-position);
-
                     getWords(node, dictionary);
                     for (int i = 0; i < dictionary->size(); i++) {
                         (*dictionary)[i] = initWord + (*dictionary)[i];

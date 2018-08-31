@@ -115,6 +115,7 @@ int main() {
 
             vector<string> *list = findSimilarWords(parse->t, word);
             // stream << "HOLA MUNDO";
+            // cout << vectorToJson(list) << endl;
             stream << vectorToJson(list);
 
             response->write_get(stream, header);

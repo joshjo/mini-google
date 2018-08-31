@@ -317,6 +317,12 @@ public:
         return response;
     };
 
+    // string findSimilarWords(string word) {
+    //     vector <string> * results = new vector <string>();
+    //     t->findOptions(word, results);
+    //     cout << "results: " << results->size() << endl;
+    // }
+
     string getDocumentContent(int idDocument) {
         Document * doc = documents[idDocument];
         string response = "{\"content\": \"" + getText(idDocument, doc->start, doc->end) + "\", \"title\": \"" + doc->title + "\" }";
