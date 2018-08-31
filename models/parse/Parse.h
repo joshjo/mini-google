@@ -236,7 +236,7 @@ private:
 	};
 
 public:
-    string find(string word, unsigned int start = 0) {
+    string find(string word, int start = 0) {
         vector<string> words;
         string response = "{ ";
         boost::split(words, word, boost::is_any_of(" "));
@@ -248,6 +248,10 @@ public:
         clock_t tStart = clock();
 
         int size = words.size();
+
+        if (start < 0) {
+            start = 0;
+        }
 
         for (auto it = words.begin(); it != words.end(); it++) {
             Node * node;
@@ -289,8 +293,9 @@ public:
 
         string results = "[ ";
         auto it = result.begin();
-        for (; it != result.end(); it++) {
-        // for (; it != result.end() && it != result.begin() + start + pageSize; it++) {
+        int resultsSize = result.size();
+        for (int i = start; i < start + pageSize && i < resultsSize; i++) {
+            pair <unsigned short int, int> * it = &(result[i]);
             results += " {\"docid\": " + to_string(it->second) + ",";
             results += "\"title\": \"" + documents[it->second]->title + "\",";
             auto range = positions.equal_range(it->second);
@@ -303,9 +308,8 @@ public:
             results += "},";
         }
 
-
-        int prev = (start - pageSize) > 0 ? (start - pageSize) : 0;
-        int next = (start + pageSize < results.size()) ? (start + pageSize) : 0;
+        int prev = (start - pageSize) >= 0 ? (start - pageSize) : -1;
+        int next = (start + pageSize < resultsSize) ? (start + pageSize) : -1;
 
         results.pop_back();
         results += "]";
