@@ -185,7 +185,8 @@ function autoResponse(val, dataSuggest){
             console.log(JSON.parse(http.responseText));
             var arr = [];
             for( var i = 0; i < 10; i++ ){
-              arr[i] = JSON.parse(http.responseText)["words"][i];
+              //if(JSON.parse(http.responseText)["words"][i] !=== "undefined")
+                arr[i] = JSON.parse(http.responseText)["words"][i];
             }
 
             /*crear un elemento DIV que contendra los items con valores:*/

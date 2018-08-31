@@ -55,7 +55,7 @@ int main() {
     Tree *tree = new Tree();
     Parse *parse = new Parse("../../files/");
     parse->processFile();
-    
+
     for(multimap<string, Word *>::iterator it = parse->words.begin(), end = parse->words.end(); it != end; it = parse->words.upper_bound(it->first)) {
         tree->add(it->first);
     }
@@ -72,7 +72,7 @@ int main() {
         response->write_get(stream,header);
 
     };
-    
+
     /* http://localhost:8090/altavista/getOptions?word=test */
     server.resource["^/altavista/getOptions$"]["GET"] = [tree](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
         stringstream stream;
