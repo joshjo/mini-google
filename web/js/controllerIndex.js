@@ -5,17 +5,16 @@ function autocomplete(inp, arr) {
   el archivo de texto y una arreglo de posibles valores:*/
 
   var currentFocus;
-
   /*ejecuta una funcion cuando alguien escribe en el textfield:*/
   inp.addEventListener("input", function(e) {
 
       var a, b, i, val = this.value;
+      // console.log(" va------> "+document.getElementById("myInput").value);
 
       /*cierra cualquier lista ya abierta de valores autocompletados:*/
       closeAllLists();
+      //falta validar los espacios en blanco
       if (!val || val === " ") { return false;}
-      currentFocus = -1;
-
       autoResponse(val);
   });
 
@@ -126,16 +125,15 @@ function eliminar_tildes(str){
 /* una array que contiene todos las posibles sugerencias */
 
 //var x = autoResponse("poco");
-var dataSuggest = ["poco","pocoyo","pocoyó","pocophone f1","pocoyo en español","pocoyo en espanol","Pocsi","poco a poco","poco  tarea","pocoyo para colorear"];
+var dataSuggest = [];//["poco","pocoyo","pocoyó","pocophone f1","pocoyo en español","pocoyo en espanol","Pocsi","poco a poco","poco  tarea","pocoyo para colorear"];
 
 /* inicializar la funcion autocompletado en el elemento "myInput", y pasar los dataSuggestcomo posibles autocompletados:*/
-
 
 autocomplete(document.getElementById("myInput"),dataSuggest);
 
 function querySearchKey(e){
     tecla = (document.all) ? e.keyCode : e.which;
-    if (tecla==13){ 
+    if (tecla==13){
       querySearch();
     }
 }
@@ -185,12 +183,6 @@ function autoResponse(val, dataSuggest){
     http.onreadystatechange = function() {
         if(http.readyState == 4 && http.status == 200) {
 
-            //console.log(JSON.parse(http.responseText)["words"][0]+"-"+JSON.parse(http.responseText)["words"][1]);
-            //datasuggest = JSON.parse(http.responseText);
-            // refreshArray(JSON.parse(http.responseText));
-            //
-
-            //console.log(JSON.parse(http.responseText));
             var arr = JSON.parse(http.responseText)["words"];
 
             /*crear un elemento DIV que contendra los items con valores:*/
@@ -216,33 +208,37 @@ function autoResponse(val, dataSuggest){
                 b.innerHTML += "<strong>"+tildes_unicode(arr[i]).substr(val.length).toLowerCase()+"</strong>";
 
                 /*insertar un inputfield(hidden)  que contendra los valores del item actual:*/
-                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                b.innerHTML += "<input  type='hidden' value='" + arr[i]+ "'>";
 
-                /*ejecutar una funcion cuando alguien hace click en el item value(DIV):*/
+                /*ejecutar una funcion cuando aiguien hace click en el item value(DIV):*/
                 b.addEventListener("click", function(e) {
                     /*insertar el valor para autocompletar el textfield:*/
-                    document.getElementById("myInput").value = document.getElementsByTagName("input")[0].value;
-                    /*cerar la lista autocompletada de valores,
+
+                    // console.log("aqui "+e.target.innerHTML+" -->"+ document.getElementsByTagName("input").innerHTML);
+                    //cambio para buscar el selecionado con el mouse
+                      var innerObj = e.target.innerHTML
+                      var index = innerObj.indexOf("value=");
+                      var objValue = "";
+                      if(index>0){
+                              index+=7;
+                          var tempStr = innerObj.substring(index,innerObj.lenght);
+                          var tempIndex = tempStr.indexOf("\"");
+                          tempIndex+=index;
+                          objValue = innerObj.substring(index,tempIndex);
+                        console.log(objValue);
+                          }
+
+//                        document.getElementById("myInput").value = document.getElementsByTagName("input")[0].value;
+                    document.getElementById("myInput").value= objValue.toLowerCase();
+
+                    /*cerrar la lista autocompletada de valores,
                     (o cualquier otra lista de valores autocompletados:*/
-                  //  closeAllLists();
+                  // closeAllLists();
                 });
                 a.appendChild(b); //añadir al DIV2
-                console.log(JSON.stringify(b));
-                //document.getElementById('container').appendChild(b);
               }
             }
         }
     }
     http.send(params);
-}
-
-
-function refreshArray(newarray){
-
-  var arr = [];
-  for( var i = 0; i < 10; i++ ){
-    arr[i] = newarray["words"][i];
-  }
-
-  return arr;
 }

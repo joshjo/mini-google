@@ -6,7 +6,127 @@ window.onload = function() {
 
 }
 
+var dataSuggest = [];//["poco","pocoyo","pocoyó","pocophone f1","pocoyo en español","pocoyo en espanol","Pocsi","poco a poco","poco  tarea","pocoyo para colorear"];
 
+/* inicializar la funcion autocompletado en el elemento "myInput", y pasar los dataSuggestcomo posibles autocompletados:*/
+
+autocomplete(document.getElementById("search"), dataSuggest);
+
+function autocomplete(inp, arr) {
+
+  /*la funcion autocomplete toma dos argumentos,
+  el archivo de texto y una arreglo de posibles valores:*/
+
+  var currentFocus;
+  /*ejecuta una funcion cuando alguien escribe en el textfield:*/
+  inp.addEventListener("input", function(e) {
+
+      var a, b, i, val = this.value;
+      // console.log(" va------> "+document.getElementById("myInput").value);
+
+      /*cierra cualquier lista ya abierta de valores autocompletados:*/
+      closeAllLists();
+      //falta validar los espacios en blanco
+      if (!val || val === " ") { return false;}
+      autoResponse(val);
+  });
+  function closeAllLists(elmnt) {
+    /*cierra todo la lista autocomplete en el documento,
+    excepto el que pasó como argumento:*/
+    var x = document.getElementsByClassName("autocomplete-items");
+    for (var i = 0; i < x.length; i++) {
+      if (elmnt != x[i] && elmnt != inp) {
+        x[i].parentNode.removeChild(x[i]);
+      }
+    }
+  }
+  /* ejecuta la funcion cuando alaguien hace click en el documento:*/
+  document.addEventListener("click", function (e) {
+      closeAllLists(e.target);
+  });
+}
+
+
+/* funcion para obtener respuesta del servidor para
+ * cada caracter buscado y palabra buscada :*/
+function autoResponse(val){
+
+    var http = new XMLHttpRequest();
+    var url = 'http://localhost:8090/altavista/getOptions?word='+ encodeURIComponent(val);
+    var params = 'orem=ipsum&name=binny';
+    // var arr =[];
+    http.open('GET', url, true);
+
+    http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+    http.onreadystatechange = function() {
+        if(http.readyState == 4 && http.status == 200) {
+
+            var arr = JSON.parse(http.responseText)["words"];
+
+            /*crear un elemento DIV que contendra los items con valores:*/
+            a = document.createElement("DIV");
+            a.setAttribute("id", this.id + "autocomplete-list");
+            a.setAttribute("class", "autocomplete-items");
+            /*añade el elemento DIV  como hijo del contenedor autocomplete:*/
+            document.getElementById("search").parentNode.appendChild(a);
+
+            /*recorrer para cada item en el datasuggest...*/
+            for (i = 0; i < arr.length; i++) {
+              /*comparar si el item empieza con la mismo caracter en el textfield :*/
+              //console.log(tildes_unicode(arr[i]).substr(0, val.length).toUpperCase()+"="+val.toUpperCase());
+
+              if (arr[i].substr(0, val.length) == val.toUpperCase()) {
+
+                /*crea un DIV para cada elemento que hace mach:*/
+                b = document.createElement("DIV");
+
+                /*hacer en negrita las letras coencidentes:*/
+
+                b.innerHTML = arr[i].substr(0,val.length).toLowerCase();
+                b.innerHTML += "<strong>"+arr[i].substr(val.length).toLowerCase()+"</strong>";
+
+                /*insertar un inputfield(hidden)  que contendra los valores del item actual:*/
+                b.innerHTML += "<input  type='hidden' value='" + arr[i]+ "'>";
+
+                /*ejecutar una funcion cuando aiguien hace click en el item value(DIV):*/
+                b.addEventListener("click", function(e) {
+                    /*insertar el valor para autocompletar el textfield:*/
+
+                    // console.log("aqui "+e.target.innerHTML+" -->"+ document.getElementsByTagName("input").innerHTML);
+                    //cambio para buscar el selecionado con el mouse
+                      var innerObj = e.target.innerHTML
+                      var index = innerObj.indexOf("value=");
+                      var objValue = "";
+                      if(index>0){
+                              index+=7;
+                          var tempStr = innerObj.substring(index,innerObj.lenght);
+                          var tempIndex = tempStr.indexOf("\"");
+                          tempIndex+=index;
+                          objValue = innerObj.substring(index,tempIndex);
+                        console.log(objValue);
+                          }
+
+//                        document.getElementById("myInput").value = document.getElementsByTagName("input")[0].value;
+                    document.getElementById("search").value= objValue.toLowerCase();
+
+                    /*cerrar la lista autocompletada de valores,
+                    (o cualquier otra lista de valores autocompletados:*/
+                    var x = document.getElementsByClassName("autocomplete-items");
+                    for (var i = 0; i < x.length; i++) {
+                      if (e.target != x[i] && e.target != val) {
+                        x[i].parentNode.removeChild(x[i]);
+                      }
+                    }
+
+                });
+                a.appendChild(b); //añadir al DIV2
+              }
+            }
+        }
+    }
+    http.send(params);
+}
 
 
 var message = "\
@@ -109,7 +229,7 @@ http.onreadystatechange = function() {
         }
     }else{
         //alert("Fail");
-        
+
         document.getElementById("search").value = q_parameter;
 
         //var div_result = document.getElementById("result");
@@ -139,7 +259,7 @@ function handleClick(event){
 
     http.onreadystatechange = function() {
         if(http.readyState == 4 && http.status == 200) {
-            
+
             console.log(http.responseText);
             alert(http.responseText);
 
@@ -212,7 +332,7 @@ function linkToContent(){
 
 function querySearchKey(e){
     tecla = (document.all) ? e.keyCode : e.which;
-    if (tecla==13){ 
+    if (tecla==13){
       querySearch();
     }
 }
