@@ -2,35 +2,29 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>mini google ucsp</title>
+    <link rel="stylesheet" href="css/styles.css">
   </head>
-  <style>
-    .logo {
-    display: block;
-    margin-left: auto;
-    margin-right: auto
-    }
-    .index_input{
-      box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      height: 100%;
-      overflow: hidden;
-      padding: 5px 9px 0;
-      padding-left: 9px;
-    }
-  </style>
   <body>
     <div class="minigoogle">
-
     </div>
     <br>
     <div class="minigoogle">
-       <img src="img/altavista.png" class="logo"alt="Smiley face" width="272" height="92">
+       <img src="img/altavista.png" class="center"alt="Smiley face" width="272" height="92">
        <br>
-       <input type="text" name="" placeholder="buscar" class="logo index_input">
-       <!-- BUG: botton  -->
+       <!-- autocompletado en div y un text field -->
+       <div id="autocompleteDiv" class="autocomplete center " style="width:40%;">
+         <input id="myInput" type="text" name="myCountry" placeholder="Buscar en Mini altavista" >
+       </div>
        <br>
-       <button type="button" aria-label="Google Search" class="logo" name="btnK" type="submit"> Search</button>
+       <br>
+       <button type="button" onclick="querySearch()" aria-label="Google Search" class="center button" name="btnK" type="submit"> Search</button>
     </div>
+  
+    <!--
+    <div class="minigoogle">
+  		<p>Inspired by <a href="github/minigoogle" target="_blank"> minigoogle</a>.</p>
+  	</div>-->
+  <script type="text/javascript" src="js/controllerIndex.js"></script>
   </body>
 </html>

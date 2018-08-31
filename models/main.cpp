@@ -1,10 +1,27 @@
 #include <iostream>
 
+#include <boost/property_tree/json_parser.hpp>
 #include "radix-tree/tree.h"
 #include "parse/Parse.h"
 
 using namespace std;
 
+vector<string>* findSimilarWords(Tree t, string word){
+    vector<string> *dictionary = new vector<string>;
+    t.findOptions(word, dictionary);
+    return dictionary;
+}
+
+string vectorToJson(vector<string> *list){
+    string json_string = "{[";
+    for(int i = 0; i < list->size(); i++){
+        json_string += "'"+(*list)[i]+"'";
+        if(i != list->size()-1)
+            json_string += ",";
+    }
+    json_string += "]}";
+    return json_string;
+}
 
 int main(int argc, char *argv[]) {
     // unordered_multimap <string, int> words;
@@ -87,5 +104,6 @@ int main(int argc, char *argv[]) {
         // }
         // cout << endl;
     }
+
     return 0;
 }

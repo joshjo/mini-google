@@ -26,6 +26,7 @@ private:
     map<string *, WordDoc *> pagerank;
     Tree * t;
 	set<string> stopWords;
+    int pageSize;
 
 	//Variables constantes
 	const string startDoc= "<doc";
@@ -146,12 +147,6 @@ private:
 						set<string>::iterator a = stopWords.find(temp);
 						if(a == stopWords.end() && temp.length() > 1)
 						{
-							/*pos = (int)readLine.tellg();
-							Word * objWord = new Word();
-							objWord->idFile = idFile;
-							objWord->start = (pos > 0)? pos - temp.length() + start: start;
-							*/
-                            // cout << temp << endl;
                             t->add(temp, idDocument, start);
 						}
 					}
@@ -230,14 +225,13 @@ private:
 	};
 
 public:
-    void find(string word) {
+    string find(string word, unsigned int start = 0) {
         vector<string> words;
+        string response = "{ ";
         boost::split(words, word, boost::is_any_of(" "));
         unordered_map <int, unsigned short int> directories;
         unordered_map <int, unsigned short int> pageranks;
-
         unordered_map <int, unsigned short int> intersections;
-
         unordered_map <int, vector<int> > positions;
 
         clock_t tStart = clock();
@@ -246,8 +240,7 @@ public:
 
         for (auto it = words.begin(); it != words.end(); it++) {
             Node * node;
-            bool found = t->find(*it, node);
-            // cout << "word: " << (*it) << endl;
+            bool found = t->find(removeCharacter(*it), node);
             if (found) {
                 for (auto it = node->directory.begin(); it != node->directory.end(); it++) {
                     // cout << "idDocument: " << it->first << endl;
@@ -282,21 +275,36 @@ public:
         //     return left.second < right.second;
         // });
         // cout << "=== resultado ===" << endl;
-        for (auto it = result.begin(); it != result.end(); it++) {
-            cout << "idDocument: " << it->first << " - " << it->second << endl;
-            cout << "positions: " << endl;
+
+        string results = "[ ";
+        auto it = result.begin();
+        for (; it != result.end(); it++) {
+        // for (; it != result.end() && it != result.begin() + start + pageSize; it++) {
+            results += " {\"docid\": " + to_string(it->second) + ",";
             auto range = positions.equal_range(it->second);
             vector<int> pos = range.first->second;
             if (pos.size()) {
-                cout << getText(it->second, pos[0]) << " - ";
+                results += "\"preview\": \"" + getText(it->second, pos[0]) + "\"";
+            } else {
+                results.pop_back();
             }
-            // for (int i = 0; i < pos.size(); i++) {
-            //     cout << pos[i] << " - ";
-            // }
-            cout << endl;
+            results += "},";
         }
 
-        printf("Time taken: %.8fs\n", end);
+
+        int prev = (start - pageSize) > 0 ? (start - pageSize) : 0;
+        int next = (start + pageSize < results.size()) ? (start + pageSize) : 0;
+
+        results.pop_back();
+        results += "]";
+        response += "\"results\": " + results + ",";
+        response += "\"prev\": " + to_string(prev) + ",";
+        response += "\"next\": " + to_string(next) + ",";
+        response += "\"total\": " + to_string(result.size()) + ",";
+        // response += "\"previous\": " + ((start - pageSize) < 0) ? "-1" : to_string(start - pageSize) + ",";
+
+        response += "\"time\": " + to_string(end);
+        response += "}";
 
         // Node * node;
         // bool found = t->find(word, node);
@@ -308,30 +316,13 @@ public:
         // } else {
         //     cout << "buuuuuu :(" << endl;
         // }
-
+        return response;
     };
-
-    DocIndex getDocument(int idDocument) {
-        Document * doc = documents[idDocument];
-        string s;
-        ifstream inputFile;
-        inputFile.open(pathDocuments + fileName);
-        int start = doc->start;
-        int end = doc->end;
-        inputFile.seekg(start);
-        s.resize(end - start);
-        inputFile.read(&s[0], end - start);
-
-
-        return s;
-    }
-
 
     string getText(int idDocument, int start)
     {
         ifstream ifs;
         Document * doc = documents[idDocument];
-        cout << "doc: " << idDocument << endl;
         if ( ! doc) {
             return "";
         }
@@ -342,12 +333,13 @@ public:
         if (fileName != "") {
             ifstream inputFile;
             inputFile.open(pathDocuments + fileName);
-            int end = start + 30;
+            int end = start + 20;
             inputFile.seekg(start);
             s.resize(end - start);
             inputFile.read(&s[0], end - start);
         }
-        return s;
+
+        return escape_json(s);
 
         // //Get Obj Document  by idodcumento
         // if(documents.find(idDocument) != documents.end())
@@ -376,6 +368,7 @@ public:
 		this->pos = 0;
         this->pathDocuments = pathDirectory;
         this->t = new Tree();
+        this->pageSize = 10;
 		initStopWords();
 	};
 

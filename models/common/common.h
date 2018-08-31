@@ -11,6 +11,8 @@
 #include <set>
 #include <algorithm>
 #include <unordered_map>
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -48,5 +50,20 @@ struct Word {
     // int end;
     // string content;
 };
+
+string escape_json(const string &s) {
+    ostringstream o;
+    for (auto c = s.cbegin(); c != s.cend(); c++) {
+        if (*c == '"' || *c == '\\' || ('\x00' <= *c && *c <= '\x1f')) {
+            o << "\\u"
+              << hex << setw(4) << setfill('0') << (int)*c;
+        } else if(int(*c) == 10) {
+            o << " ";
+        } else {
+            o << *c;
+        }
+    }
+    return o.str();
+}
 
 #endif // COMMON_H
