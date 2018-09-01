@@ -52,88 +52,56 @@ int main(int argc, char *argv[]) {
 
     Parse *parse = new Parse("../../files/");
     parse->processFile();
+
     int prev, next, total;
     double time;
 
+    cout << "... Load index done! " << endl;
     cout << "====================================" << endl;
     cout << "   (⌐■_■)  ** ALTAVISTA ** (⌐■_■)" << endl;
     cout << "====================================" << endl;
 
-    while (true) {
-        string option;
+    while(true) {
         string word;
-        mainMenu();
-        cout << endl << "Option >> ";
-        getline(cin, option);
-        if (option == "1") {
-            string suboption;
-            prev = 0;
-            next = 0;
-            total = 0;
-            time = 0;
-            int start = 0;
-            bool firstTime = true;
-            while(true) {
-                if (firstTime) {
-                    cout << "SEARCH >> ";
-                    getline(cin, word);
-                    firstTime = false;
-                }
+        string result;
+        prev = 0;
+        next = 0;
+        total = 0;
+        time = 0;
+        int start = 0;
+        cout << "Enter your query: ";
+        getline(cin, word);
+        vector <Result> results;
+        parse->find(word, results, total, next, prev, time, start, 30);
 
+        while (true) {
+            for (int i = 0; i < results.size(); i++) {
+                cout << "[" << i + 1 << "] " << results[i].title << " | " << results[i].preview << endl;
+            }
+            cout << endl << "About: " << total << " results (" << time << " seconds)" << endl << endl;
 
-                vector <Result> results;
-                parse->find(word, results, total, next, prev, time, start);
-                for (int i = 0; i < results.size(); i++) {
-                    cout << " === RESULT === " << endl;
-                    cout << "ID DOCUMENT: ";
-                    cout << results[i].docId << endl;
-                    cout << "TITLE: ";
-                    cout << results[i].title << endl;
-                    cout << "PREVIEW: ";
-                    cout << results[i].preview << endl;
-                    cout << endl;
-                }
-                cout << "About: " << total << " results (" << time << " seconds)" << endl << endl;
-
-                if (total == 0) {
-                    start = 0;
-                    cout << "¯\\_(꘠ヘ꘠)_/¯" << endl << " Sorry. We don't find your query. Try with the following options: " << endl;
-                    firstTime = true;
-                    continue;
-                }
-
-                searchMenu(next, prev);
-                getline(cin, suboption);
-                if (suboption == "1" && next > 0) {
-                    start = next;
-                } else if (suboption == "2" && prev > 0) {
-                    start = prev;
+            cout << "Do you want to open any result [n or result number]? Type 0 to go back to search  ";
+            getline(cin, result);
+            if (result == "0") {
+                break;
+            } else if (all_of(result.begin(), result.end(), ::isdigit)) {
+                int index = atoi(result.c_str());
+                if (index < 1 || index >= total) {
+                    cout << "**ERROR** Invalid result number " << endl;
                 } else {
-                    break;
-                }
-            }
-        } else if (option == "2") {
-            string docId;
-            cout << "DOCUMENT ID >> ";
-            getline(cin, docId);
-            if (all_of(docId.begin(), docId.end(), ::isdigit)) {
-                int docIdInt = atoi(docId.c_str());
-                Document * doc = parse->getDocument(docIdInt);
-                if (doc) {
-                    cout << "TITLE: " << endl;
+                    int docIdInt = results[index - 1].docNumber;
+                    Document * doc = parse->getDocument(docIdInt);
                     cout << doc->title << endl;
-                    cout << "CONTENT: " << endl;
-                    cout << parse->getText(docIdInt, doc->start, doc->end);
-                    cout << endl << endl;
+                    cout << parse->getText(docIdInt, doc->start, doc->end) << endl << endl;
                 }
+
+            } else {
+                cout << "**ERROR** not a valid number" << endl;
             }
-
-
-        } else if (option == "0") {
-            break;
-        } else {
-            cout << endl << "¯\\_(ツ)_/¯ Invalid option. Please try again ¯\\_(ツ)_/¯ " << endl << endl;
+            cout << endl;
         }
+
+
     }
 
     return 0;

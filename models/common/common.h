@@ -18,9 +18,9 @@ using namespace std;
 
 struct Result {
     string docId;
+    int docNumber;
     string title;
     string preview;
-    double time;
 };
 
 struct Document {

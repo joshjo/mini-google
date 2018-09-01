@@ -243,8 +243,8 @@ private:
 		// g1.push_back("spanishText_455000_460000");
 		// g1.push_back("spanishText_460000_465000");
 		// g1.push_back("spanishText_465000_470000");
-		// g1.push_back("spanishText_470000_475000");
-		//g1.push_back("spanishText_475000_480000");
+	    g1.push_back("spanishText_470000_475000");
+		g1.push_back("spanishText_475000_480000");
 		g1.push_back("spanishText_480000_485000");
 		return g1;
 	};
@@ -286,7 +286,8 @@ public:
             int & next,
             int & prev,
             double & time,
-            int start = 0
+            int start = 0,
+            int previewSize = 200
         ) {
         vector<string> words;
         string response = "{ ";
@@ -343,10 +344,11 @@ public:
             Result r;
             r.docId = to_string(it->second);
             r.title = documents[it->second]->title;
+            r.docNumber = it->second;
             auto range = positions.equal_range(it->second);
             vector<int> pos = range.first->second;
             if (pos.size()) {
-                r.preview = getText(it->second, pos[0], pos[0] + 200, "...");
+                r.preview = getText(it->second, pos[0], pos[0] + previewSize, "...");
             }
             results.push_back(r);
         }
