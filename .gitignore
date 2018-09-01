@@ -62,4 +62,7 @@ status_code_test
 
 # Ides
 .vscode/**
-build/**
+build/cmake_install.cmake
+build/CMakeCache.txt
+build/Makefile
+build/run_server
