@@ -20,6 +20,7 @@ struct Result {
     string docId;
     string title;
     string preview;
+    double time;
 };
 
 struct Document {

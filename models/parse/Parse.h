@@ -257,34 +257,24 @@ public:
         vector <Result> results;
         find(word, results, total, next, prev, time, start);
         int resultsSize = results.size();
-        string response;
-        // for (int i = start; i < start + pageSize && i < resultsSize; i++) {
-        //     pair <unsigned short int, int> * it = &(results[i]);
-        //     jsonResults += " {\"docid\": " + to_string(it->second) + ",";
-        //     jsonResults += "\"title\": \"" + documents[it->second]->title + "\",";
-        //     auto range = positions.equal_range(it->second);
-        //     vector<int> pos = range.first->second;
-        //     if (pos.size()) {
-        //         jsonResults += "\"preview\": \"" + getText(it->second, pos[0], pos[0] + 200, "...") + "\"";
-        //     } else {
-        //         jsonResults.pop_back();
-        //     }
-        //     jsonResults += "},";
-        // }
+        string response = "{ ";
+        for (auto it = results.begin(); it != results.end(); it++) {
+            jsonResults += " {\"docid\": " + it->docId + ",";
+            jsonResults += "\"title\": \"" + it->title + "\",";
+            jsonResults += "\"preview\": \"" + it->preview + "\"},";
+        }
 
-        // // int prev = (start - pageSize) >= 0 ? (start - pageSize) : -1;
-        // // int next = (start + pageSize < resultsSize) ? (start + pageSize) : -1;
+        // int prev = (start - pageSize) >= 0 ? (start - pageSize) : -1;
+        // int next = (start + pageSize < resultsSize) ? (start + pageSize) : -1;
 
-        // jsonResults.pop_back();
-        // jsonResults += "]";
-        // response += "\"results\": " + jsonResults + ",";
-        // response += "\"prev\": " + to_string(prev) + ",";
-        // response += "\"next\": " + to_string(next) + ",";
-        // response += "\"total\": " + to_string(result.size()) + ",";
-        // // response += "\"previous\": " + ((start - pageSize) < 0) ? "-1" : to_string(start - pageSize) + ",";
-
-        // response += "\"time\": " + to_string(end);
-        // response += "}";
+        jsonResults.pop_back();
+        jsonResults += "]";
+        response += "\"results\": " + jsonResults + ",";
+        response += "\"prev\": " + to_string(prev) + ",";
+        response += "\"next\": " + to_string(next) + ",";
+        response += "\"total\": " + to_string(total) + ",";
+        response += "\"time\": " + to_string(time);
+        response += "}";
 
         return response;
     }

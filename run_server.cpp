@@ -82,7 +82,7 @@ int main() {
         auto start_it = start_range.first;
         int start = stoi( start_it->second);
 
-        stream << parse->find(q_it->second, start);
+        stream << parse->findJson(q_it->second, start);
         response->write_get(stream,header);
     };
 
