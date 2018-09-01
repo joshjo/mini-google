@@ -77,7 +77,7 @@ function autoResponse(prefix, val){
         if(http.readyState == 4 && http.status == 200) {
 
             var arr = JSON.parse(http.responseText)["words"];
-
+            console.log(arr);
             /*crear un elemento DIV que contendra los items con valores:*/
             a = document.createElement("DIV");
             a.setAttribute("id", this.id + "autocomplete-list");
@@ -225,6 +225,45 @@ http.onreadystatechange = function() {
                 node.setAttribute("class","PostResult");
                 div_result.appendChild(node);
             }
+
+
+
+
+
+
+            var query_op_arr = q_parameter.split(" ");
+            var query_op = query_op_arr[query_op_arr.length-1];
+
+
+            var http_op = new XMLHttpRequest();
+            var url_op = 'http://localhost:8090/altavista/getOptions?word='+query_op;
+            var params_op = 'orem=ipsum&name=binny';
+            // var arr =[];
+            http_op.open('GET', url_op, true);
+        
+            http_op.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        
+            http_op.onreadystatechange = function() {
+                if(http_op.readyState == 4 && http_op.status == 200) {
+                    var arr = JSON.parse(http_op.responseText)['words'];
+                    var counter = 0;
+                    var max = arr.length < 4 ? arr.length : 4;
+                    var current_val = document.getElementById("search").value.toUpperCase();
+                    for(var i=0; i<max; i++){
+                        if (arr[i] != current_val){
+                            counter += 1;
+                            document.getElementById("suggestionRad").innerHTML += " <a href='../web/main.html?q="+arr[i]+"&start=0'>"+arr[i]+"</a>, ";
+                        }
+                    }
+                    
+                    if(counter == 0){
+                        document.getElementById("wrapperSug").innerHTML = "";
+                    }
+                }
+            }
+            http_op.send(params_op);
+
+
 
         }else if(json_ans["status"] == "404"){
             //show json_ans["similar"]

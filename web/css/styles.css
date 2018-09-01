@@ -188,3 +188,13 @@ color: #ffffff;
   border-radius: 2px;
   padding: 11px;
 }
+
+.lev{
+  padding-left: 10%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+#suggestionRad{
+  display: inline;
+}
