@@ -230,7 +230,7 @@ function autoResponse(prefix, val){
 
                     // console.log("aqui "+e.target.innerHTML+" -->"+ document.getElementsByTagName("input").innerHTML);
                     //cambio para buscar el selecionado con el mouse
-                      var innerObj = e.target.innerHTML;
+                      //var innerObj = e.target.innerHTML;
                       var innerObj = String(this.innerHTML);
                       var index = innerObj.indexOf("value=");
                       var objValue = "";
