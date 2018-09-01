@@ -50,7 +50,7 @@ void searchMenu(int next, int prev) {
 
 int main(int argc, char *argv[]) {
 
-    Parse *parse = new Parse("../../files/");
+    Parse *parse = new Parse("../../files/", 0);
     parse->processFile();
 
     int prev, next, total;
@@ -77,6 +77,12 @@ int main(int argc, char *argv[]) {
         while (true) {
             for (int i = 0; i < results.size(); i++) {
                 cout << "[" << i + 1 << "] " << results[i].title << " | " << results[i].preview << endl;
+                if (i > 5) {
+                    break;
+                }
+            }
+            if (results.size() > 5) {
+                cout << "..." << endl;
             }
             cout << endl << "About: " << total << " results (" << time << " seconds)" << endl << endl;
 
@@ -86,7 +92,7 @@ int main(int argc, char *argv[]) {
                 break;
             } else if (all_of(result.begin(), result.end(), ::isdigit)) {
                 int index = atoi(result.c_str());
-                if (index < 1 || index >= total) {
+                if (index < 1 || index > total) {
                     cout << "**ERROR** Invalid result number " << endl;
                 } else {
                     int docIdInt = results[index - 1].docNumber;

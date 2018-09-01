@@ -264,9 +264,6 @@ public:
             jsonResults += "\"preview\": \"" + it->preview + "\"},";
         }
 
-        // int prev = (start - pageSize) >= 0 ? (start - pageSize) : -1;
-        // int next = (start + pageSize < resultsSize) ? (start + pageSize) : -1;
-
         jsonResults.pop_back();
         jsonResults += "]";
         response += "\"results\": " + jsonResults + ",";
@@ -339,19 +336,36 @@ public:
         next = (start + pageSize < total) ? (start + pageSize) : -1;
         sort(preResults.begin(), preResults.end(), cmp());
 
-        for (int i = start; i < start + pageSize && i < total; i++) {
-            pair <unsigned short int, int> * it = &(preResults[i]);
-            Result r;
-            r.docId = to_string(it->second);
-            r.title = documents[it->second]->title;
-            r.docNumber = it->second;
-            auto range = positions.equal_range(it->second);
-            vector<int> pos = range.first->second;
-            if (pos.size()) {
-                r.preview = getText(it->second, pos[0], pos[0] + previewSize, "...");
+        if (pageSize > 0) {
+            for (int i = start; i < start + pageSize && i < total; i++) {
+                pair <unsigned short int, int> * it = &(preResults[i]);
+                Result r;
+                r.docId = to_string(it->second);
+                r.title = documents[it->second]->title;
+                r.docNumber = it->second;
+                auto range = positions.equal_range(it->second);
+                vector<int> pos = range.first->second;
+                if (pos.size()) {
+                    r.preview = getText(it->second, pos[0], pos[0] + previewSize, "...");
+                }
+                results.push_back(r);
             }
-            results.push_back(r);
+        } else {
+            for (int i = 0; i < total; i++) {
+                pair <unsigned short int, int> * it = &(preResults[i]);
+                Result r;
+                r.docId = to_string(it->second);
+                r.title = documents[it->second]->title;
+                r.docNumber = it->second;
+                auto range = positions.equal_range(it->second);
+                vector<int> pos = range.first->second;
+                if (pos.size()) {
+                    r.preview = getText(it->second, pos[0], pos[0] + previewSize, "...");
+                }
+                results.push_back(r);
+            }
         }
+
 
         return results.size() > 0;
     };
@@ -393,12 +407,12 @@ public:
         return escape_json(s + endText);
     };
 
-	Parse(string pathDirectory)
+	Parse(string pathDirectory, int pageSize = 10)
 	{
 		this->pos = 0;
         this->pathDocuments = pathDirectory;
         this->t = new Tree();
-        this->pageSize = 10;
+        this->pageSize = pageSize;
 		initStopWords();
 	};
 
