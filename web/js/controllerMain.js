@@ -21,7 +21,7 @@ function autocomplete(inp, arr) {
   /*ejecuta una funcion cuando alguien escribe en el textfield:*/
   inp.addEventListener("input", function(e) {
 
-      var a, b, i, val = this.value.trim();
+      var a, b, i, val = this.value;
       // console.log(" va------> "+document.getElementById("myInput").value);
 
       /*cierra cualquier lista ya abierta de valores autocompletados:*/
@@ -109,7 +109,7 @@ function autoResponse(prefix, val){
 
                     // console.log("aqui "+e.target.innerHTML+" -->"+ document.getElementsByTagName("input").innerHTML);
                     //cambio para buscar el selecionado con el mouse
-                      var innerObj = e.target.innerHTML
+                      var innerObj = String(this.innerHTML);
                       var index = innerObj.indexOf("value=");
                       var objValue = "";
                       if(index>0){
