@@ -230,21 +230,23 @@ function autoResponse(prefix, val){
 
                     // console.log("aqui "+e.target.innerHTML+" -->"+ document.getElementsByTagName("input").innerHTML);
                     //cambio para buscar el selecionado con el mouse
-                      var innerObj = e.target.innerHTML
+                      var innerObj = e.target.innerHTML;
+                      var innerObj = String(this.innerHTML);
                       var index = innerObj.indexOf("value=");
                       var objValue = "";
-                      
+                      //console.log(this);
+                      //console.log(String(this.innerHTML));
                       if(index>0){
                         index+=7;
                         var tempStr = innerObj.substring(index,innerObj.lenght);
                         var tempIndex = tempStr.indexOf("\"");
                         tempIndex+=index;
                         objValue = innerObj.substring(index,tempIndex);
-                        console.log(objValue);
+                        //console.log(objValue);
                       }
-                          alert(objValue);
-                          alert(index);
-                          console.log(e);
+                          //alert(objValue);
+                          //alert(index);
+                          //console.log(e);
 //                        document.getElementById("myInput").value = document.getElementsByTagName("input")[0].value;
                     document.getElementById("myInput").value= objValue.toLowerCase();
 
